@@ -1,0 +1,44 @@
+// DM Environment file for SimpleGame.dme.
+// All manual changes should be made outside the BEGIN_ and END_ blocks.
+// New source code should be placed in .dm files: choose File/New --> Code File.
+
+// BEGIN_INTERNALS
+// END_INTERNALS
+
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+// END_FILE_DIR
+
+// BEGIN_PREFERENCES
+#define DEBUG
+// END_PREFERENCES
+
+#include <kaiochao\Shapes\Shapes.dme>
+#define TILE_WIDTH SHAPE_WIDTH
+#define TILE_HEIGHT SHAPE_HEIGHT
+
+// BEGIN_INCLUDE
+#include <kaiochao\Directions\Directions.dme>
+#include <kaiochao\enum\Enum.dme>
+#include <kaiochao\event\Event.dme>
+#include <kaiochao\shapes\shapes.dme>
+#include "code\AimingHandler-Player.dm"
+#include "code\AimingHandler.dm"
+#include "code\Bullet.dm"
+#include "code\BulletPool.dm"
+#include "code\Component.dm"
+#include "code\Cooldown.dm"
+#include "code\Gun.dm"
+#include "code\Lobby.dm"
+#include "code\Math.dm"
+#include "code\MovementHandler-Player.dm"
+#include "code\MovementHandler.dm"
+#include "code\Physics.dm"
+#include "code\PixelMovement.dm"
+#include "code\Player.dm"
+#include "code\SimpleGame.dm"
+#include "code\UpdateLoop.dm"
+#include "code\Vector2.dm"
+#include "code\Weapon.dm"
+// END_INCLUDE
+
