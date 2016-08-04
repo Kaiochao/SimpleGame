@@ -5,7 +5,7 @@ Gun
 	parent_type = /Weapon
 
 	var global
-		BulletPool/BulletPool = new (10)
+		ObjectPool/BulletPool = new (10, /Bullet)
 
 	var
 		muzzle_speed = 1600
