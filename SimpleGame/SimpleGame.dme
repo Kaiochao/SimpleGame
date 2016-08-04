@@ -31,6 +31,7 @@
 #include "code\Component.dm"
 #include "code\Cooldown.dm"
 #include "code\Gun.dm"
+#include "code\Interface.dm"
 #include "code\Lobby.dm"
 #include "code\Math.dm"
 #include "code\MovementHandler-Player.dm"
