@@ -23,6 +23,7 @@
 #include <kaiochao\enum\Enum.dme>
 #include <kaiochao\event\Event.dme>
 #include <kaiochao\shapes\shapes.dme>
+#include "code\_SimpleGame.dm"
 #include "code\AimingHandler-Player.dm"
 #include "code\AimingHandler.dm"
 #include "code\Bullet.dm"
@@ -37,7 +38,6 @@
 #include "code\Physics.dm"
 #include "code\PixelMovement.dm"
 #include "code\Player.dm"
-#include "code\SimpleGame.dm"
 #include "code\UpdateLoop.dm"
 #include "code\Vector2.dm"
 #include "code\Weapon.dm"
