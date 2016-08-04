@@ -87,6 +87,7 @@ Gun/Spread
 			var Bullet/bullet = ..()
 
 			bullet.drag = 2
+			bullet.minimum_speed = 300
 
 			var s = 1 - rand() * 0.3
 			bullet.SetVelocity(bullet.velocity.Scale(s))
