@@ -24,12 +24,15 @@ Weapon
 
 		Update(mob/player/Player, DeltaTime)
 			if(body)
-				var AimingHandler/player_aiming = Player.aiming_handler
-				if(player_aiming)
-					var Vector2/aim = player_aiming.GetDirection()
-					animate(Player,
-						time = world.tick_lag,
-						easing = SINE_EASING,
-						flags = ANIMATION_END_NOW,
-						transform = initial(Player.transform) * Math.RotationMatrix(aim)
-					)
+				UpdateBodyRotation(Player, DeltaTime)
+
+		UpdateBodyRotation(mob/player/Player, DeltaTime)
+			var AimingHandler/player_aiming = Player.aiming_handler
+			if(player_aiming)
+				var Vector2/aim = player_aiming.GetDirection()
+				animate(Player,
+					time = world.tick_lag,
+					easing = SINE_EASING,
+					flags = ANIMATION_END_NOW,
+					transform = initial(Player.transform) * Math.RotationMatrix(aim)
+				)
