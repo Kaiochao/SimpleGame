@@ -13,6 +13,7 @@
 #define DEBUG
 // END_PREFERENCES
 
+#include "code\Debug.dm"
 #include <kaiochao\Shapes\Shapes.dme>
 #define TILE_WIDTH SHAPE_WIDTH
 #define TILE_HEIGHT SHAPE_HEIGHT

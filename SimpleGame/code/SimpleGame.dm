@@ -15,7 +15,3 @@ turf/checker
 	icon_state = "rect"
 	color = "silver"
 	New() color = (x + y) % 2 ? "#aaa" : "#bbb"
-
-proc
-	log_call(datum/Object, Message)
-		world.log << "\ref[Object] \"[Object]\" [Message]"
