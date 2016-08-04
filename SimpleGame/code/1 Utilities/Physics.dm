@@ -1,17 +1,13 @@
-#include "Vector2.dm"
-#include "PixelMovement.dm"
-#include "UpdateLoop.dm"
-
-var UpdateLoop/Physics/physics_loop = new
-
-UpdateLoop/Physics
-	callback = "_PhysicsUpdate"
+var UpdateLoop/physics_loop = new ("_PhysicsUpdate")
 
 atom/movable
 	/* Distance covered per second, in pixels.
 		Actual movement occurs every tick of the Physics Clock.
+		Setter: SetVelocity() (don't set this directly)
 	*/
-	var Vector2/velocity
+	var
+		vector2/velocity
+		TranslateFlags/translate_flags = 0
 
 	New()
 		..()
@@ -19,22 +15,24 @@ atom/movable
 			SetVelocity(velocity)
 
 	/* Set velocity.
+		See: PhysicsUpdate()
 	*/
-	proc/SetVelocity(Vector2/Velocity)
-		if(velocity == Velocity || velocity && velocity.Equals(Velocity)) return
+	proc/SetVelocity(vector2/Velocity)
+		if(velocity == Velocity || Velocity && Velocity.Equals(velocity))
+			return
 
-		velocity = Velocity
-
-		if(!velocity || velocity.IsZero())
-			_DisablePhysics()
-		else
+		if(Velocity && !Velocity.IsZero())
+			velocity = Velocity.CopyAsImmutable()
 			_EnablePhysics()
+		else
+			velocity = null
+			_DisablePhysics()
 
 	/* Called every physics-tick, just before velocity is applied.
 		Only called when velocity is non-zero.
 		Available for overriding.
 	*/
-	proc/PhysicsUpdate(UpdateLoop/Physics/PhysicsLoop, DeltaTime)
+	proc/PhysicsUpdate(UpdateLoop/Time)
 
 
 
@@ -51,13 +49,12 @@ atom/movable
 			_physics_enabled = FALSE
 			physics_loop.Remove(src)
 
-	proc/_PhysicsUpdate(UpdateLoop/Physics/PhysicsLoop, DeltaTime)
+	proc/_PhysicsUpdate(UpdateLoop/Time)
 		if(!z)
 			SetVelocity()
 
 		else
-			PhysicsUpdate(PhysicsLoop, DeltaTime)
+			PhysicsUpdate(Time)
 
 			if(velocity)
-				var Vector2/time_velocity = velocity.Multiply(DeltaTime)
-				Translate(time_velocity)
+				Translate(velocity.Multiply(Time.delta_time), translate_flags)

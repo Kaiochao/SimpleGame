@@ -3,15 +3,16 @@ world
 
 	fps = 20
 
-	maxx = 25
-	maxy = 25
+	maxx = 50
+	maxy = 50
 	view = 12
 	turf = /turf/checker
 
-client
-	fps = 60
+	New()
+		log = file("log.txt")
+		..()
 
 turf/checker
 	icon_state = "rect"
 	color = "silver"
-	New() color = (x + y) % 2 ? "#aaa" : "#bbb"
+	New() color = (x + y) % 2 ? "#565" : "#676"

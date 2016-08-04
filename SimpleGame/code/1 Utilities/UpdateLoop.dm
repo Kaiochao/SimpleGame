@@ -1,8 +1,6 @@
-var UpdateLoop/update_loop = new
-
 UpdateLoop
 	var
-		callback = "Update"
+		callback
 
 		updaters[]
 		last_update_time[]
@@ -30,7 +28,8 @@ UpdateLoop
 				else
 					last_update_time -= Updater
 
-	New()
+	New(Callback)
+		callback = Callback
 		Start()
 
 	proc
@@ -43,9 +42,7 @@ UpdateLoop
 					if(!updaters.len) updaters = null
 
 				if(updaters)
-					to_update = updaters.Copy()
 					Update()
-					to_update = null
 
 				sleep world.tick_lag
 
@@ -54,13 +51,12 @@ UpdateLoop
 				item
 				updater
 				time
-				delta_time
 
+			to_update = updaters.Copy()
 			for(item in to_update)
 				updater = item
-
 				time = world.time
-				delta_time = (time - last_update_time[updater]) / 10
+				delta_time = (1e5 * time - 1e5 * last_update_time[updater]) / 1e6
 				last_update_time[updater] = time
-
-				call(updater, callback)(src, delta_time)
+				call(updater, callback)(src)
+			to_update = null

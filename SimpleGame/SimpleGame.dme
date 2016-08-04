@@ -13,36 +13,45 @@
 #define DEBUG
 // END_PREFERENCES
 
-#include "code\Debug.dm"
-
 #include <kaiochao\Shapes\Shapes.dme>
 #define TILE_WIDTH SHAPE_WIDTH
 #define TILE_HEIGHT SHAPE_HEIGHT
 
+#define NO_MACRO_OVERWRITE
+
 // BEGIN_INCLUDE
 #include <kaiochao\Directions\Directions.dme>
+#include <kaiochao\clock\Clock.dme>
 #include <kaiochao\enum\Enum.dme>
 #include <kaiochao\event\Event.dme>
+#include <kaiochao\inputhandler\InputHandler.dme>
 #include <kaiochao\shapes\shapes.dme>
-#include "code\_SimpleGame.dm"
-#include "code\AimingHandler-Player.dm"
-#include "code\AimingHandler.dm"
-#include "code\Bullet.dm"
-#include "code\Component.dm"
-#include "code\Cooldown.dm"
-#include "code\Debug.dm"
-#include "code\Gun.dm"
-#include "code\Interface.dm"
-#include "code\Lobby.dm"
-#include "code\Math.dm"
-#include "code\MovementHandler-Player.dm"
-#include "code\MovementHandler.dm"
-#include "code\ObjectPool.dm"
-#include "code\Physics.dm"
-#include "code\PixelMovement.dm"
-#include "code\Player.dm"
-#include "code\UpdateLoop.dm"
-#include "code\Vector2.dm"
-#include "code\Weapon.dm"
+#include "skin.dmf"
+#include "code\1 Utilities\Abstract.dm"
+#include "code\1 Utilities\Cooldown.dm"
+#include "code\1 Utilities\Debug.dm"
+#include "code\1 Utilities\Interface.dm"
+#include "code\1 Utilities\Math.dm"
+#include "code\1 Utilities\ObjectPool.dm"
+#include "code\1 Utilities\Physics.dm"
+#include "code\1 Utilities\PixelMovement.dm"
+#include "code\1 Utilities\Temporary.dm"
+#include "code\1 Utilities\UpdateLoop.dm"
+#include "code\1 Utilities\Vector2.dm"
+#include "code\2 Components\AimingHandler-Player.dm"
+#include "code\2 Components\AimingHandler.dm"
+#include "code\2 Components\Component.dm"
+#include "code\2 Components\Gun.dm"
+#include "code\2 Components\MovementHandler-Player.dm"
+#include "code\2 Components\MovementHandler.dm"
+#include "code\2 Components\Weapon.dm"
+#include "code\2 Components\WeaponHandler-Player.dm"
+#include "code\2 Components\WeaponHandler.dm"
+#include "code\3 Content\Bullet.dm"
+#include "code\3 Content\Client.dm"
+#include "code\3 Content\Lobby.dm"
+#include "code\3 Content\Player.dm"
+#include "code\3 Content\World.dm"
+#include "code\3 Content\Vignette\Vignette.dm"
 // END_INCLUDE
 

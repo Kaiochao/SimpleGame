@@ -6,20 +6,23 @@ Math
 		//	2.7182817459106445f according to num2text()
 
 	proc
-		Hypotenuse(X, Y)
+		Hypot(X, Y)
 			return (X || Y) ? sqrt(X * X + Y * Y) : 0
 
-		RotationMatrix(Vector2/Vector, InitialDirection = Directions.North)
-			var Vector2/unit = Vector
+		RotationMatrix(vector2/Vector, InitialDirection = Directions.North)
+			var vector2/unit = Vector, unit_x, unit_y
 
 			if(Vector.GetSquareMagnitude() != 1)
 				unit = unit.GetNormalized()
 
+			unit_x = unit.GetX()
+			unit_y = unit.GetY()
+
 			switch(InitialDirection)
 				if(Directions.North)
-					return matrix(unit.y, unit.x, 0, -unit.x, unit.y, 0)
+					return matrix(unit_y, unit_x, 0, -unit_x, unit_y, 0)
 				if(Directions.East)
-					return matrix(unit.x, -unit.y, 0, unit.x, unit.y, 0)
+					return matrix(unit_x, -unit_y, 0, unit_x, unit_y, 0)
 
 		Interpolate(A, B, T)
 			return A * (1 - T) + B * T

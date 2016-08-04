@@ -1,0 +1,29 @@
+macro "macro"
+
+
+window "default"
+	elem "default"
+		type = MAIN
+		pos = 281,0
+		size = 800x800
+		anchor1 = none
+		anchor2 = none
+		background-color = none
+		is-default = true
+		saved-params = "pos;size;is-minimized;is-maximized"
+		statusbar = false
+		can-resize = false
+		macro = "macro"
+	elem "map"
+		type = MAP
+		pos = 0,0
+		size = 800x800
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = none
+		is-default = true
+		drop-zone = true
+		right-click = true
+		saved-params = "icon-size"
+		letterbox = false
+
