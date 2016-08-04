@@ -53,7 +53,9 @@ Bullet
 				OnDestroyed(src)
 
 		Go(Gun/Gun)
-			alpha = initial(alpha)
+			alpha = 0
+			animate(src, alpha = 255, time = world.tick_lag)
+
 			drag = initial(drag)
 			minimum_speed = initial(minimum_speed)
 
