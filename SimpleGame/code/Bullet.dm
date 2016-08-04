@@ -23,8 +23,6 @@ Bullet
 	var tmp
 		initial_speed
 
-	EVENT(OnDestroyed, Bullet/Bullet)
-
 	Cross(Bullet/Bullet)
 		return istype(Bullet) || ..()
 
@@ -44,8 +42,8 @@ Bullet
 			var Vector2/dampened_velocity = velocity.Dampen(0, drag, DeltaTime)
 			SetVelocity(dampened_velocity)
 
-			var speed = sqrt(speed_squared)
-			alpha = speed / initial_speed * (256 - 224) + 224
+
+	EVENT(OnDestroyed, Bullet/Bullet)
 
 	proc
 		Destroy()
