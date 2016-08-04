@@ -14,6 +14,7 @@
 // END_PREFERENCES
 
 #include "code\Debug.dm"
+
 #include <kaiochao\Shapes\Shapes.dme>
 #define TILE_WIDTH SHAPE_WIDTH
 #define TILE_HEIGHT SHAPE_HEIGHT
@@ -29,6 +30,7 @@
 #include "code\Bullet.dm"
 #include "code\Component.dm"
 #include "code\Cooldown.dm"
+#include "code\Debug.dm"
 #include "code\Gun.dm"
 #include "code\Interface.dm"
 #include "code\Lobby.dm"
