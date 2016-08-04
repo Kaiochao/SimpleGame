@@ -12,7 +12,8 @@ Weapon
 	proc
 		Start(mob/Equipper)
 			equipper = Equipper
-			Equipper.overlays += body
+			if(body)
+				Equipper.overlays += body
 
 		Destroy(mob/Equipper)
 			if(body)
