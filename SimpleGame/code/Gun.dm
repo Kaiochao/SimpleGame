@@ -17,7 +17,7 @@ Gun
 
 	Update(mob/player/Player, DeltaTime)
 		..()
-		if(!shot_cooldown.IsCoolingDown() && (mouse_downed || Player.input_handler.GetButtonState(Macro.MouseLeftButton)))
+		if(CanShoot(Player))
 			mouse_downed = FALSE
 			shot_cooldown.Start()
 			Shoot()
@@ -31,6 +31,18 @@ Gun
 		EVENT_REMOVE(Player.input_handler.OnButton, src, .proc/HandleButton)
 
 	proc
+		CanShoot(mob/player/Player)
+			if(shot_cooldown && shot_cooldown.IsCoolingDown())
+				return FALSE
+
+			if(mouse_downed)
+				return TRUE
+
+			if(Player.input_handler && Player.input_handler.GetButtonState(Macro.MouseLeftButton))
+				return TRUE
+
+			return FALSE
+
 		HandleButton(InputHandler/InputHandler, Macro/Macro, ButtonState/ButtonState)
 			if(ButtonState == ButtonState.Pressed && Macro == Macro.MouseLeftButton)
 				mouse_downed = TRUE
