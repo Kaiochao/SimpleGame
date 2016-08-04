@@ -1,7 +1,10 @@
+#include "Temporary.dm"
+
 ObjectPool
 	var
 		initial_count
 		object_type
+	TEMPORARY
 
 	var tmp
 		ObjectPool/Poolable/pooled_objects[]
