@@ -22,7 +22,7 @@ atom/movable
 			return
 
 		if(Velocity && !Velocity.IsZero())
-			velocity = Velocity.CopyAsImmutable()
+			velocity = Velocity.Copy()
 			_EnablePhysics()
 		else
 			velocity = null

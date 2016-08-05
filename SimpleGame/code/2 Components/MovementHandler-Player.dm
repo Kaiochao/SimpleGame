@@ -45,10 +45,7 @@ MovementHandler/Player
 				input_y = move_analog_input.GetY()
 
 			if(input_x || input_y)
-				if(velocity)
-					velocity.Set(input_x * speed, input_y * speed)
-				else
-					velocity = new (input_x * speed, input_y * speed)
+				velocity = new (input_x * speed, input_y * speed)
 			else
 				velocity = null
 

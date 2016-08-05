@@ -12,55 +12,25 @@ Vector2Static
 		FromList(List[])
 			return new /vector2 (List[1], List[2])
 
-vector2/immutable
-	var
-		name
+		// Tip: If you're using [atan2(X, Y)] to provide the angle here,
+		// you should instad use [vector2.ScaleToMagnitude(new /vector2 (X, Y), Magnitude)].
+		// or [normalized.Multiply(Magnitude)] if you have a normalized vector (X, Y).
+		FromPolar(Magnitude, DegreesClockwiseFromNorth)
+			return new /vector2 (
+				Magnitude * sin(DegreesClockwiseFromNorth),
+				Magnitude * cos(DegreesClockwiseFromNorth))
 
-	New(X = 0, Y = 0)
-		_x = X
-		_y = Y
-		name = "Vector2([X], [Y])"
+		ScaleToMagnitude(vector2/Direction, Magnitude)
+			var
+				x = Direction.GetX()
+				y = Direction.GetY()
+			if(x || y)
+				var s = Magnitude / Math.Hypot(x, y)
+				return new /vector2 (x * s, y * s)
+			else
+				return VECTOR2_ZERO
 
-	proc
-		FailChange()
-			CRASH("Attempted to change immutable vector.")
-
-	Set(X, Y)
-		FailChange()
-
-	SetX(X)
-		FailChange()
-
-	SetY(Y)
-		FailChange()
-
-	Add(vector2/V, Vector2Flags/Flags)
-		if(Flags & Vector2Flags.Modify) return FailChange()
-		else return ..()
-
-	Subtract(vector2/V, Vector2Flags/Flags)
-		if(Flags & Vector2Flags.Modify) return FailChange()
-		else return ..()
-
-	Multiply(M, Vector2Flags/Flags)
-		if(Flags & Vector2Flags.Modify) return FailChange()
-		else return ..()
-
-	Divide(D, Vector2Flags/Flags)
-		if(Flags & Vector2Flags.Modify) return FailChange()
-		else return ..()
-
-	Turn(Degrees, Vector2Flags/Flags)
-		if(Flags & Vector2Flags.Modify) return FailChange()
-		else return ..()
-
-	Dampen(vector2/End, T, DeltaTime, Vector2Flags/Flags)
-		if(Flags & Vector2Flags.Modify) FailChange()
-		else return ..()
-
-	Scale(S, Vector2Flags/Flags)
-		return Multiply(S, Flags)
-
+// Immutable
 vector2
 	var
 		_x
@@ -68,34 +38,36 @@ vector2
 
 	New(X = 0, Y = X)
 		if(isnum(X) && isnum(Y))
-			Set(X, Y)
-		else CRASH("Unexpected argument form.")
+			goto BODY
+
+		if(istype(X, /vector2))
+			var vector2/v = X
+			X = v._x
+			Y = v._y
+			goto BODY
+
+		CRASH("Unexpected argument form.")
+
+		BODY
+
+		_x = X
+		_y = Y
 
 	proc
-		Set(X = 0, Y = X)
-			_x = X
-			_y = Y
-
-		SetX(X = 0)
-			_x = X
-
-		SetY(Y = 0)
-			_y = Y
-
 		GetX()
 			return _x
 
 		GetY()
 			return _y
 
-		CopyAsImmutable()
-			return new /vector2/immutable (_x, _y)
-
 		Copy()
 			return new /vector2 (_x, _y)
 
 		Equals(vector2/V)
 			return V ? _x == V._x && _y == V._y : IsZero()
+
+		IsZero()
+			return _x == 0 && _y == 0
 
 		Add(vector2/V, Vector2Flags/Flags)
 			if(Flags & Vector2Flags.Modify)
@@ -173,9 +145,6 @@ vector2
 
 		Dot(vector2/V)
 			return _x * V._x + _y * V._y
-
-		IsZero()
-			return _x == 0 && _y == 0
 
 		ToString()
 			return "Vector2([_x], [_y])"

@@ -42,7 +42,18 @@ atom/movable
 	/* Represent the position within the current whole-pixel position.
 		Components are between -0.5 and 0.5.
 	*/
-	var vector2/sub_step
+	var vector2/_sub_step
+
+	proc/SetSubStep(X, Y)
+		if(X || Y)
+			_sub_step = new /vector2 (X, Y)
+		else
+			_sub_step = null
+
+	proc/GetSubStep()
+		if(!_sub_step)
+			_sub_step = VECTOR2_ZERO
+		return _sub_step
 
 	GetLowerX()  return 1 + bound_x + step_x + (x - 1) * TILE_WIDTH
 	GetLowerY()  return 1 + bound_y + step_y + (y - 1) * TILE_HEIGHT
@@ -87,13 +98,7 @@ atom/movable
 		step_y = StepY
 
 		if(StepX || StepY)
-			var sub_step_x = StepX - round(StepX, 1)
-			var sub_step_y = StepY - round(StepY, 1)
-			if(sub_step_x || sub_step_y)
-				if(sub_step)
-					sub_step.Set(sub_step_x, sub_step_y)
-				else
-					sub_step = new (sub_step_x, sub_step_y)
+			SetSubStep(StepX - round(StepX, 1), StepY - round(StepY, 1))
 
 	/* Sets the position of the lower-left corner of src's bounding box.
 
@@ -258,6 +263,7 @@ atom/movable
 
 	proc/TranslateXY(X, Y, TranslateFlags/Flags)
 		var
+			vector2/sub_step = GetSubStep()
 			sub_step_x
 			sub_step_y
 			move_x
@@ -266,6 +272,9 @@ atom/movable
 		if(sub_step)
 			sub_step_x = sub_step.GetX()
 			sub_step_y = sub_step.GetY()
+		else
+			sub_step_x = 0
+			sub_step_y = 0
 
 		if(X)
 			sub_step_x += X
@@ -277,12 +286,7 @@ atom/movable
 			move_y = round(sub_step_y, 1)
 			sub_step_y -= move_y
 
-		if(!(sub_step_x || sub_step_y))
-			sub_step = null
-		else if(sub_step)
-			sub_step.Set(sub_step_x, sub_step_y)
-		else
-			sub_step = new /vector2 (sub_step_x, sub_step_y)
+		SetSubStep(sub_step_x, sub_step_y)
 
 		if(move_x || move_y)
 			var new_step_size = 1 + Math.Ceil(max(abs(X), abs(Y)))
