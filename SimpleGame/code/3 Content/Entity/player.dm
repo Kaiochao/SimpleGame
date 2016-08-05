@@ -10,6 +10,7 @@
 Entity/player
 	icon = null
 
+	density = TRUE
 	bounds = "24,24"
 	pixel_x = (24 - 32) / 2
 	pixel_y = (24 - 32) / 2
