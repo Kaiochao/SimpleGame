@@ -1,4 +1,4 @@
-Cooldown
+cooldown
 	var
 		clock/clock = world
 

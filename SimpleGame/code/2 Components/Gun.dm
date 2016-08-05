@@ -13,7 +13,7 @@ AbstractType(Gun)
 		bullet_minimum_speed = 100
 
 		tmp
-			Cooldown/shot_cooldown = new (1)
+			cooldown/shot_cooldown = new (1)
 			_fire_button_downed
 
 	Update()
