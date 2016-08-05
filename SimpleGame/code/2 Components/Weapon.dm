@@ -6,6 +6,8 @@ AbstractType(Weapon)
 
 		AimingHandler/_aiming_handler
 
+		vector2/_last_aim
+
 	New(obj/Body)
 		if(Body)
 			SetBody(Body)
@@ -33,6 +35,8 @@ AbstractType(Weapon)
 		UpdateBodyRotation()
 			if(_aiming_handler)
 				var vector2/aim = _aiming_handler.GetDirection()
+				if(aim.Equals(_last_aim)) return
+				_last_aim = aim
 				animate(player,
 					time = world.tick_lag,
 					easing = SINE_EASING,
