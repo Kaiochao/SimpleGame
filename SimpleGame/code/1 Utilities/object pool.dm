@@ -49,7 +49,6 @@ object_pool
 		This is called by the object's OnDestroyed event, which is required for all poolable objects.
 	*/
 	proc/Push(object_pool/Poolable/Object)
-		log_call(src, "Push([object_to_debug_text(Object)])")
 		if(!pooled_objects[Object])
 			pooled_objects[Object] = TRUE
 
