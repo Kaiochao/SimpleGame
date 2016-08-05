@@ -1,6 +1,4 @@
-AbstractType(Wrapper)
-	parent_type = /Component
-
+AbstractType(Component/Wrapper)
 	var tmp/_value
 
 	proc/Get()
@@ -11,7 +9,7 @@ AbstractType(Wrapper)
 
 Entity
 	proc/GetWrappedValue(WrapperType)
-		var Wrapper/wrapper = GetComponent(WrapperType)
+		var Component/Wrapper/wrapper = GetComponent(WrapperType)
 		return wrapper ? wrapper.Get() : null
 
 Component

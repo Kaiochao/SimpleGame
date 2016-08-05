@@ -1,1 +1,1 @@
-Wrapper/InputHandler
+Component/Wrapper/InputHandler

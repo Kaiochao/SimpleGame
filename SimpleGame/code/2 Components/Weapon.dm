@@ -1,10 +1,8 @@
-AbstractType(Weapon)
-	parent_type = /Component
-
+AbstractType(Component/Weapon)
 	var tmp
 		obj/body
 
-		AimingHandler/_aiming_handler
+		Component/AimingHandler/_aiming_handler
 
 		vector2/_last_aim
 
@@ -17,7 +15,7 @@ AbstractType(Weapon)
 			if(body)
 				entity.underlays += body
 
-			_aiming_handler = entity.GetComponent(/AimingHandler)
+			_aiming_handler = entity.GetComponent(/Component/AimingHandler)
 
 		Destroy()
 			if(body)

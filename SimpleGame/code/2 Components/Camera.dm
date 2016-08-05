@@ -1,6 +1,4 @@
-Camera
-	parent_type = /Component
-
+Component/Camera
 	var tmp/client/_client
 
 	var x
@@ -11,7 +9,7 @@ Camera
 		y = Y
 
 	proc/Start()
-		_client = entity.GetWrappedValue(/Wrapper/Client)
+		_client = entity.GetWrappedValue(/Component/Wrapper/Client)
 		_client.eye = entity
 		_client.perspective = EYE_PERSPECTIVE
 

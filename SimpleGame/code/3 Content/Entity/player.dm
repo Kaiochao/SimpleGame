@@ -25,12 +25,12 @@ Entity/player
 		..()
 
 	AddDefaultComponents()
-		var
+		var Component
 			Wrapper
 				Client/client_wrapper = new
 				InputHandler/input_handler_wrapper = new
-			WeaponHandler/weapon_handler = new /WeaponHandler/player
-			Physics/physics = new
+			WeaponHandler/weapon_handler = new /Component/WeaponHandler/player
+			physics/physics = new
 
 		client_wrapper.Set(client)
 		input_handler_wrapper.Set(client)
@@ -42,9 +42,9 @@ Entity/player
 				physics,
 				weapon_handler
 			) + newlist(
-				/Camera,
-				/MovementHandler/player,
-				/AimingHandler/player
+				/Component/Camera,
+				/Component/MovementHandler/player,
+				/Component/AimingHandler/player
 			)
 		)
 

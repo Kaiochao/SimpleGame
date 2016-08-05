@@ -21,11 +21,13 @@ mob/lobby
 			player = new /Entity/player (null, client)
 
 			var
-				WeaponHandler/weapon_handler = player.GetComponent(/WeaponHandler)
+				Component
+					WeaponHandler/weapon_handler = player.GetComponent(
+						/Component/WeaponHandler)
 
-				Gun/inaccurate
-					rifle
-					spread/shotgun
+					Weapon/Gun/inaccurate
+						rifle
+						spread/shotgun
 
 				global/vector2/start_position = new /vector2 (
 					world.maxx * TILE_WIDTH / 2,

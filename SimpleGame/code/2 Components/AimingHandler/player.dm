@@ -1,4 +1,4 @@
-AimingHandler/player
+Component/AimingHandler/player
 	var
 		zoom_button = Macro.MouseRightButton
 		aim_analog = Macro.GamepadRightAnalog
@@ -26,8 +26,8 @@ AimingHandler/player
 		return _direction.Copy()
 
 	proc/Start()
-		_client = GetWrappedValue(/Wrapper/Client)
-		_input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		_client = GetWrappedValue(/Component/Wrapper/Client)
+		_input_handler = GetWrappedValue(/Component/Wrapper/InputHandler)
 		EVENT_ADD(_input_handler.OnMouseMove, src, .proc/HandleMouseMove)
 
 	proc/HandleMouseMove(InputHandler/InputHandler, MoveX, MoveY)
@@ -98,7 +98,7 @@ AimingHandler/player
 			if(_has_analog_input || _mouse_moved)
 				_direction = aim_input.GetNormalized()
 
-			var Camera/camera = GetComponent(/Camera)
+			var Component/Camera/camera = GetComponent(/Component/Camera)
 			if(camera)
 				var
 					camera_x = 0

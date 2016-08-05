@@ -1,11 +1,9 @@
-AbstractType(MovementHandler)
-	parent_type = /Component
-
+AbstractType(Component/MovementHandler)
 	var tmp
-		Physics/_physics
+		Component/physics/_physics
 
 	proc/Start()
-		_physics = GetComponent(/Physics)
+		_physics = GetComponent(/Component/physics)
 
 	proc/Destroy()
 		_physics.SetVelocity()

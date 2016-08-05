@@ -1,8 +1,6 @@
-AbstractType(WeaponHandler)
-	parent_type = /Component
-
+AbstractType(Component/WeaponHandler)
 	var
-		Weapon
+		Component/Weapon
 			_weapon
 			_weapons[]
 
@@ -21,10 +19,10 @@ AbstractType(WeaponHandler)
 	/*
 		Sets weapons to the given array.
 	*/
-	proc/SetWeapons(Weapon/Weapons[])
+	proc/SetWeapons(Component/Weapon/Weapons[])
 		_weapons = Weapons.Copy()
 
-	proc/EquipWeapon(Weapon/Weapon)
+	proc/EquipWeapon(Component/Weapon/Weapon)
 		if(_weapon)
 			entity.RemoveComponent(_weapon)
 		_weapon = Weapon

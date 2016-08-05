@@ -1,8 +1,6 @@
 var update_loop/physics_loop = new ("_PhysicsUpdate")
 
-Physics
-	parent_type = /Component
-
+Component/physics
 	/* Distance covered per second, in pixels.
 		Actual movement occurs every tick of the Physics Clock.
 		Setter: SetVelocity() (don't set this directly)

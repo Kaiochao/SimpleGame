@@ -1,4 +1,4 @@
-MovementHandler/player
+Component/MovementHandler/player
 	var
 		walk_speed = 80
 		run_speed = 160
@@ -24,7 +24,8 @@ MovementHandler/player
 			speed
 			input_x
 			input_y
-			InputHandler/input_handler = entity.GetWrappedValue(/Wrapper/InputHandler)
+			InputHandler/input_handler = entity.GetWrappedValue(
+				/Component/Wrapper/InputHandler)
 
 		speed = IsRunning() ? run_speed : walk_speed
 
@@ -32,10 +33,13 @@ MovementHandler/player
 			velocity = null
 
 		else
-			var vector2/move_analog_input = vector2.FromList(input_handler.GetAnalog2DState(move_analog))
+			var vector2/move_analog_input = vector2.FromList(
+				input_handler.GetAnalog2DState(move_analog))
 			if(move_analog_input.IsZero())
-				input_x = input_handler.GetButtonState(move_right) - input_handler.GetButtonState(move_left)
-				input_y = input_handler.GetButtonState(move_up) - input_handler.GetButtonState(move_down)
+				input_x = input_handler.GetButtonState(move_right) \
+						- input_handler.GetButtonState(move_left)
+				input_y = input_handler.GetButtonState(move_up) \
+						- input_handler.GetButtonState(move_down)
 				if(input_x && input_y)
 					var magnitude = Math.Hypot(input_x, input_y)
 					input_x /= magnitude
@@ -53,5 +57,7 @@ MovementHandler/player
 
 	proc
 		IsRunning()
-			var InputHandler/input_handler = entity.GetWrappedValue(/Wrapper/InputHandler)
-			return !(input_handler.GetButtonState(speed_button) || input_handler.GetButtonState(gamepad_speed_button))
+			var InputHandler/input_handler = entity.GetWrappedValue(
+				/Component/Wrapper/InputHandler)
+			return !(input_handler.GetButtonState(speed_button) \
+				|| input_handler.GetButtonState(gamepad_speed_button))

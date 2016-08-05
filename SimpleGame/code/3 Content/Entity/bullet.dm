@@ -12,7 +12,7 @@ BulletStatic
 				} (/Entity/bullet, 1000, 100)
 			return pool
 
-Physics/bullet
+Component/physics/bullet
 	var
 		minimum_speed
 		drag
@@ -53,7 +53,7 @@ Entity/bullet
 	AddDefaultComponents()
 		DisableUpdate()
 		AddComponents(newlist(
-			/Physics/bullet
+			/Component/physics/bullet
 			))
 
 	Cross(Entity/bullet/Bullet)
@@ -75,7 +75,7 @@ Entity/bullet
 	proc/Pool()
 		DisableUpdate()
 
-		var Physics/physics = GetComponent(/Physics)
+		var Component/physics/physics = GetComponent(/Component/physics)
 		physics.SetVelocity()
 
 		loc = null

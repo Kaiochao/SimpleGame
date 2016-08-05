@@ -1,15 +1,17 @@
-WeaponHandler/player
+Component/WeaponHandler/player
 	var
 		gamepad_next_weapon = Macro.GamepadR1
 		gamepad_previous_weapon = Macro.GamepadL1
 
 	proc/Start()
-		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		var InputHandler/input_handler = GetWrappedValue(
+			/Component/Wrapper/InputHandler)
 		EVENT_ADD(input_handler.OnMouseWheel, src, .proc/HandleMouseWheel)
 		EVENT_ADD(input_handler.OnButton, src, .proc/HandleButton)
 
 	proc/Destroy()
-		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		var InputHandler/input_handler = GetWrappedValue(
+			/Component/Wrapper/InputHandler)
 		EVENT_REMOVE_OBJECT(input_handler.OnMouseWheel, src)
 		EVENT_REMOVE_OBJECT(input_handler.OnButton, src)
 
@@ -19,7 +21,10 @@ WeaponHandler/player
 		else
 			EquipPreviousWeapon()
 
-	proc/HandleButton(InputHandler/InputHandler, Macro/Macro, ButtonState/ButtonState)
+	proc/HandleButton(
+		InputHandler/InputHandler,
+		Macro/Macro,
+		ButtonState/ButtonState)
 		if(ButtonState)
 			if(Macro == gamepad_next_weapon)
 				EquipNextWeapon()
@@ -27,7 +32,7 @@ WeaponHandler/player
 				EquipPreviousWeapon()
 
 	proc/EquipNextWeapon()
-		var Weapon/weapons[] = GetWeapons()
+		var Component/Weapon/weapons[] = GetWeapons()
 
 		if(!(weapons && weapons.len))
 			return
@@ -42,7 +47,7 @@ WeaponHandler/player
 		EquipWeapon(weapons[index])
 
 	proc/EquipPreviousWeapon()
-		var Weapon/weapons[] = GetWeapons()
+		var Component/Weapon/weapons[] = GetWeapons()
 
 		if(!(weapons && weapons.len))
 			return

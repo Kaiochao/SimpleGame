@@ -1,4 +1,2 @@
-AbstractType(AimingHandler)
-	parent_type = /Component
-
+AbstractType(Component/AimingHandler)
 	proc/GetDirection()

@@ -1,6 +1,4 @@
-AbstractType(Gun)
-	parent_type = /Weapon
-
+AbstractType(Component/Weapon/Gun)
 	var
 		fire_button = Macro.MouseLeftButton
 		gamepad_fire_button = Macro.GamepadR2
@@ -24,17 +22,17 @@ AbstractType(Gun)
 
 	Start()
 		..()
-		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		var InputHandler/input_handler = GetWrappedValue(
+			/Component/Wrapper/InputHandler)
 		if(input_handler)
 			EVENT_ADD(input_handler.OnButton, src, .proc/HandleButton)
 
 	Destroy()
 		..()
-		var Wrapper/i = entity.GetComponent(/Wrapper/InputHandler)
-		if(i)
-			var InputHandler/input_handler = i.Get()
-			if(input_handler)
-				EVENT_REMOVE(input_handler.OnButton, src, .proc/HandleButton)
+		var InputHandler/input_handler = GetWrappedValue(
+			/Component/Wrapper/InputHandler)
+		if(input_handler)
+			EVENT_REMOVE(input_handler.OnButton, src, .proc/HandleButton)
 
 	proc/CanShoot()
 		if(shot_cooldown && shot_cooldown.IsCoolingDown())
@@ -43,14 +41,16 @@ AbstractType(Gun)
 		if(_fire_button_downed)
 			return TRUE
 
-		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		var InputHandler/input_handler = GetWrappedValue(
+			/Component/Wrapper/InputHandler)
 		if(input_handler && IsTriggerPulled())
 			return TRUE
 
 		return FALSE
 
 	proc/IsTriggerPulled()
-		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		var InputHandler/input_handler = GetWrappedValue(
+			/Component/Wrapper/InputHandler)
 		if(input_handler)
 			return input_handler.GetButtonState(fire_button) \
 				|| input_handler.GetButtonState(gamepad_fire_button)
@@ -65,7 +65,8 @@ AbstractType(Gun)
 		var
 			object_pool/bullet_pool = global.Bullet.GetObjectPool()
 			Entity/bullet/bullet = bullet_pool.Pop()
-			Physics/bullet/bullet_physics = bullet.GetComponent(/Physics)
+			Component/physics/bullet/bullet_physics = bullet.GetComponent(
+				/Component/physics)
 			vector2
 				muzzle_position = GetMuzzlePosition()
 				to_muzzle = muzzle_position.Subtract(entity.GetCenterPosition())
@@ -79,7 +80,8 @@ AbstractType(Gun)
 		bullet_physics.initial_speed = muzzle_velocity.GetMagnitude()
 		bullet_physics.SetVelocity(muzzle_velocity)
 
-		bullet.transform = initial(bullet.transform) * Math.RotationMatrix(muzzle_velocity.GetNormalized())
+		bullet.transform = initial(bullet.transform) \
+			* Math.RotationMatrix(muzzle_velocity.GetNormalized())
 
 		bullet.SetCenter(entity)
 		bullet.Translate(to_muzzle)
@@ -125,13 +127,13 @@ AbstractType(Gun)
 			Shoot()
 				var
 					Entity/bullet/bullet
-					Physics/bullet/bullet_physics
+					Component/physics/bullet/bullet_physics
 					n
 					random_velocity_scale
 
 				for(n in 1 to spread_count)
 					bullet = ..()
-					bullet_physics = bullet.GetComponent(/Physics)
+					bullet_physics = bullet.GetComponent(/Component/physics)
 
 					bullet_physics.drag = 2
 					bullet_physics.minimum_speed = 300
