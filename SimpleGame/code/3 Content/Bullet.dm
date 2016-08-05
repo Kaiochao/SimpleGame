@@ -60,6 +60,7 @@ Bullet
 
 	proc
 		Pool()
+			SetVelocity()
 			loc = null
 			if(OnPooled)
 				OnPooled(src)
