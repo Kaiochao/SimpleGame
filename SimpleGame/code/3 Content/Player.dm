@@ -83,7 +83,7 @@ mob/player
 			_is_updater = FALSE
 
 			// Remove all components.
-			RemoveComponents(arglist(_components))
+			RemoveComponents(_components)
 
 			// Fire event.
 			if(OnDestroy)
