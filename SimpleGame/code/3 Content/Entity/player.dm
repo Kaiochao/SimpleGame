@@ -16,10 +16,10 @@ Entity/player
 
 	overlays = list(/obj/player_body)
 
-	var client/client
+	var client/_client
 
 	New(atom/Loc, client/Client)
-		client = Client
+		_client = Client
 		name = Client.key
 		gender = Client.gender
 		..()
@@ -32,8 +32,8 @@ Entity/player
 			WeaponHandler/weapon_handler = new /Component/WeaponHandler/player
 			physics/physics = new
 
-		client_wrapper.Set(client)
-		input_handler_wrapper.Set(client)
+		client_wrapper.Set(_client)
+		input_handler_wrapper.Set(_client)
 
 		AddComponents(
 			list(
