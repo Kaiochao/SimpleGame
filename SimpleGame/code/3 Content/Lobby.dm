@@ -2,10 +2,14 @@ mob/lobby
 	Login()
 		name = client.key
 		gender = client.gender
-		start()
+		join()
+
+	Logout()
+		key = null
+		loc = null
 
 	verb
-		start()
+		join()
 			var
 				vector2/start = new (world.maxx * TILE_WIDTH / 2, world.maxy * TILE_HEIGHT / 2)
 				mob/player/player
@@ -14,31 +18,33 @@ mob/lobby
 					inaccurate/rifle
 					spread/shotgun
 
-			for(var/mob/lobby/lobby)
-				player = new
-				player.SetCenter(start, 1)
+			player = new
+			player.name = name
+			player.gender = gender
+			player.client = client
+			player.input_handler = player.client
 
-				player.name = lobby.name
-				player.gender = lobby.gender
-				player.client = lobby.client
+			EVENT_ADD(player.OnUpdate, player, /mob/player/proc/ShowCpuUsage)
 
-				EVENT_ADD(player.OnUpdate, player, /mob/player/proc/ShowCpuUsage)
+			player.AddComponents(newlist(
+				/MovementHandler/Player,
+				/AimingHandler/Player,
+				/WeaponHandler/Player))
 
-				player.input_handler = player.client
-				weapon_handler = new /WeaponHandler/Player
-
-				player.AddComponents(list(
-					new /MovementHandler/Player,
-					new /AimingHandler/Player,
-					weapon_handler))
-
+			weapon_handler = player.GetComponent(/WeaponHandler)
+			if(weapon_handler)
 				rifle = new
-				shotgun = new
 				rifle.SetBody(new /obj/gun)
+
+				shotgun = new
+				shotgun.spread_count = 25
+				shotgun.shot_cooldown = new /cooldown (0.5)
 				shotgun.SetBody(new /obj/gun/shotgun)
 
 				weapon_handler.SetWeapons(list(rifle, shotgun))
 				weapon_handler.EquipWeapon(rifle)
+
+			player.SetCenter(start, 1)
 
 mob/player
 	proc
