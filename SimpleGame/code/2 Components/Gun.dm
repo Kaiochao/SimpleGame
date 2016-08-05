@@ -108,7 +108,7 @@ Gun/spread
 	shot_cooldown = new (5)
 
 	var
-		spread_count = 8
+		spread_count = 12
 		velocity_max_scale = 0.3
 
 	Shoot()
