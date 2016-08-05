@@ -8,10 +8,6 @@ world
 	view = 12
 	turf = /turf/checker
 
-	New()
-		log = file("log.txt")
-		..()
-
 turf/checker
 	icon_state = "rect"
 	color = "silver"
