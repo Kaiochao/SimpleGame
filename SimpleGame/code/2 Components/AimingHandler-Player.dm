@@ -6,12 +6,11 @@ AimingHandler/Player
 		tmp
 			vector2
 				_direction
-				_last_mouse_screen_position
 
-			_degrees
-			_recalculate_degrees
+			_mouse_moved = FALSE
+			_has_analog_input
 
-			_is_zooming = 0
+			_was_zooming = 0
 
 			// The camera is offset by the vector [zoom_delta * zoom_scale] (zoom_delta in a vector2 in Update()
 			_zoom_scale = 2/3
@@ -24,7 +23,14 @@ AimingHandler/Player
 		return _direction.Copy()
 
 	proc
+		Start()
+			EVENT_ADD(player.input_handler.OnMouseMove, src, .proc/HandleMouseMove)
+
+		HandleMouseMove(InputHandler/InputHandler, MoveX, MoveY)
+			_mouse_moved = TRUE
+
 		Destroy()
+			EVENT_REMOVE(player.input_handler.OnMouseMove, src, .proc/HandleMouseMove)
 			if(_aim_line)
 				del _aim_line
 
@@ -47,56 +53,85 @@ AimingHandler/Player
 
 			return _aim_line
 
-		Update()
-			var vector2
-				aim_analog_input = vector2.FromList(player.input_handler.GetAnalog2DState(aim_analog))
-				has_analog_input = !aim_analog_input.IsZero()
+		/*
 
-			if(has_analog_input)
-				_direction = aim_analog_input.GetNormalized()
+			Check aim input from the gamepad or else from the the mouse.
+			If zooming, position the camera ahead of the player by the zoom vector.
+
+		*/
+		Update()
+			var
+				client/client = player.client
+				vector2
+					aim_input = GetAnalogAimInput()
+					zoom
+
+			if(aim_input)
+				_has_analog_input = TRUE
+
+				zoom = new /vector2 (
+					aim_input.GetX() * client.bound_width / 2,
+					aim_input.GetY() * client.bound_height / 2)
+
+				animate(GetAimLine(),
+					alpha = aim_input.GetMagnitude() * 32,
+					transform = initial(_aim_line.transform) * Math.RotationMatrix(GetDirection()),
+					time = world.tick_lag)
 
 			else
-				var vector2
-					mouse_position = vector2.FromList(player.input_handler.GetMouseMapPosition())
-					mouse_screen_position = vector2.FromList(player.input_handler.GetMouseScreenPosition())
-					player_position = player.GetCenterPosition()
-					player_to_mouse = mouse_position.Subtract(player_position)
+				_has_analog_input = FALSE
+				aim_input = GetMouseAimInput()
 
-				if(!player_to_mouse.IsZero() && !mouse_screen_position.Equals(_last_mouse_screen_position))
-					_last_mouse_screen_position = mouse_screen_position
-					_direction = player_to_mouse.GetNormalized()
+				var is_zooming = player.input_handler.GetButtonState(zoom_button)
+				if(is_zooming)
+					zoom = aim_input.Multiply(_zoom_scale)
 
-			var previous_is_zooming = _is_zooming
-			_is_zooming = has_analog_input || player.input_handler.GetButtonState(zoom_button)
+			if(aim_input)
+				if(_has_analog_input || _mouse_moved)
+					_direction = aim_input.GetNormalized()
 
-			if(_is_zooming)
-				var vector2
-					mouse_screen_position = vector2.FromList(player.input_handler.GetMouseScreenPosition())
-					center_position = new (player.client.bound_width / 2, player.client.bound_height / 2)
-					zoom_delta
+				if(zoom)
+					var
+						camera_x = zoom.GetX() * _zoom_scale
+						camera_y = zoom.GetY() * _zoom_scale
 
-				if(has_analog_input)
-					zoom_delta = new /vector2 (
-						aim_analog_input.GetX() * player.client.bound_width / 2,
-						aim_analog_input.GetY() * player.client.bound_height / 2)
+					if(client.pixel_x != camera_x || client.pixel_y != camera_y)
+						animate(player.client,
+							pixel_x = camera_x,
+							pixel_y = camera_y,
+							time = 1)
 
-					animate(GetAimLine(),
-						alpha = aim_analog_input.GetMagnitude() * 32,
-						transform = initial(_aim_line.transform) * Math.RotationMatrix(GetDirection()),
-						time = world.tick_lag)
-				else
-					zoom_delta = mouse_screen_position.Subtract(center_position)
+					_was_zooming = TRUE
 
-				animate(player.client,
-					pixel_x = zoom_delta.GetX() * (2/3),
-					pixel_y = zoom_delta.GetY() * (2/3),
-					time = 1)
+				else if(_was_zooming)
+					if(_aim_line)
+						del _aim_line
 
-			else if(previous_is_zooming)
-				if(_aim_line)
-					del _aim_line
+					animate(player.client,
+						pixel_x = 0,
+						pixel_y = 0,
+						time = 1)
 
-				animate(player.client,
-					pixel_x = 0,
-					pixel_y = 0,
-					time = 1)
+					_was_zooming = FALSE
+
+			_mouse_moved = FALSE
+
+		GetAnalogAimInput()
+			var
+				analog_aim[] = player.input_handler.GetAnalog2DState(aim_analog)
+				aim_x = analog_aim[1]
+				aim_y = analog_aim[2]
+
+			if(aim_x || aim_y)
+				return new /vector2 (aim_x, aim_y)
+
+		GetMouseAimInput()
+			var
+				mouse_position[] = player.input_handler.GetMouseMapPosition()
+				player_x = player.GetCenterX()
+				player_y = player.GetCenterY()
+				dx = mouse_position[1] - player_x
+				dy = mouse_position[2] - player_y
+
+			if(dx || dy)
+				return new /vector2 (dx, dy)
