@@ -1,4 +1,4 @@
-MovementHandler/Player
+MovementHandler/player
 	var
 		walk_speed = 80
 		run_speed = 160
@@ -24,7 +24,7 @@ MovementHandler/Player
 			speed
 			input_x
 			input_y
-			InputHandler/input_handler = player.input_handler
+			InputHandler/input_handler = entity.GetWrappedValue(/Wrapper/InputHandler)
 
 		speed = IsRunning() ? run_speed : walk_speed
 
@@ -53,5 +53,5 @@ MovementHandler/Player
 
 	proc
 		IsRunning()
-			var InputHandler/input_handler = player.input_handler
+			var InputHandler/input_handler = entity.GetWrappedValue(/Wrapper/InputHandler)
 			return !(input_handler.GetButtonState(speed_button) || input_handler.GetButtonState(gamepad_speed_button))

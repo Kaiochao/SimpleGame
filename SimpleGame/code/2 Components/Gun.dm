@@ -1,5 +1,4 @@
 AbstractType(Gun)
-
 	parent_type = /Weapon
 
 	var
@@ -12,9 +11,9 @@ AbstractType(Gun)
 		bullet_drag = 1
 		bullet_minimum_speed = 100
 
-		tmp
-			cooldown/shot_cooldown = new (1)
-			_fire_button_downed
+	var tmp
+		cooldown/shot_cooldown = new (1)
+		_fire_button_downed
 
 	Update()
 		..()
@@ -25,99 +24,118 @@ AbstractType(Gun)
 
 	Start()
 		..()
-		EVENT_ADD(player.input_handler.OnButton, src, .proc/HandleButton)
+		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		if(input_handler)
+			EVENT_ADD(input_handler.OnButton, src, .proc/HandleButton)
 
 	Destroy()
 		..()
-		EVENT_REMOVE(player.input_handler.OnButton, src, .proc/HandleButton)
+		var Wrapper/i = entity.GetComponent(/Wrapper/InputHandler)
+		if(i)
+			var InputHandler/input_handler = i.Get()
+			if(input_handler)
+				EVENT_REMOVE(input_handler.OnButton, src, .proc/HandleButton)
 
-	proc
-		CanShoot()
-			if(shot_cooldown && shot_cooldown.IsCoolingDown())
-				return FALSE
-
-			if(_fire_button_downed)
-				return TRUE
-
-			if(player.input_handler && GetFireInputState())
-				return TRUE
-
+	proc/CanShoot()
+		if(shot_cooldown && shot_cooldown.IsCoolingDown())
 			return FALSE
 
-		GetFireInputState()
-			var InputHandler/input_handler = player.input_handler
-			return input_handler.GetButtonState(fire_button) || input_handler.GetButtonState(gamepad_fire_button)
+		if(_fire_button_downed)
+			return TRUE
 
-		HandleButton(InputHandler/InputHandler, Macro/Macro, ButtonState/ButtonState)
-			if(ButtonState == ButtonState.Pressed && (Macro == fire_button || Macro == gamepad_fire_button))
-				_fire_button_downed = TRUE
+		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		if(input_handler && IsTriggerPulled())
+			return TRUE
 
-		Shoot()
-			var ObjectPool/bullet_pool = global.Bullet.GetObjectPool()
-			var Bullet/bullet = bullet_pool.Pop()
+		return FALSE
 
-			bullet.alpha = 0
-			animate(bullet, alpha = 255, time = world.tick_lag)
+	proc/IsTriggerPulled()
+		var InputHandler/input_handler = GetWrappedValue(/Wrapper/InputHandler)
+		if(input_handler)
+			return input_handler.GetButtonState(fire_button) \
+				|| input_handler.GetButtonState(gamepad_fire_button)
 
-			bullet.drag = bullet_drag
-			bullet.minimum_speed = bullet_minimum_speed
+	proc/HandleButton(
+		InputHandler/InputHandler, Macro/Macro, ButtonState/ButtonState)
+		if(ButtonState == ButtonState.Pressed \
+			&& (Macro == fire_button || Macro == gamepad_fire_button))
+			_fire_button_downed = TRUE
 
-			var
-				vector2
-					muzzle_position = GetMuzzlePosition()
-					player_position = player.GetCenterPosition()
-					to_muzzle = muzzle_position.Subtract(player_position)
-					muzzle_velocity = GetMuzzleVelocity()
+	proc/Shoot()
+		var
+			object_pool/bullet_pool = global.Bullet.GetObjectPool()
+			Entity/bullet/bullet = bullet_pool.Pop()
+			Physics/bullet/bullet_physics = bullet.GetComponent(/Physics)
+			vector2
+				muzzle_position = GetMuzzlePosition()
+				to_muzzle = muzzle_position.Subtract(entity.GetCenterPosition())
+				muzzle_velocity = GetMuzzleVelocity()
 
-			bullet.transform = initial(bullet.transform) * Math.RotationMatrix(muzzle_velocity.GetNormalized())
-			bullet.initial_speed = muzzle_velocity.GetMagnitude()
+		bullet.alpha = 0
+		animate(bullet, alpha = 255, time = world.tick_lag)
 
-			bullet.SetCenter(player)
-			bullet.Translate(to_muzzle)
+		bullet_physics.drag = bullet_drag
+		bullet_physics.minimum_speed = bullet_minimum_speed
+		bullet_physics.initial_speed = muzzle_velocity.GetMagnitude()
+		bullet_physics.SetVelocity(muzzle_velocity)
 
-			bullet.SetVelocity(muzzle_velocity)
+		bullet.transform = initial(bullet.transform) * Math.RotationMatrix(muzzle_velocity.GetNormalized())
 
-			return bullet
+		bullet.SetCenter(entity)
+		bullet.Translate(to_muzzle)
+
+		return bullet
+
+	proc/GetDirection()
+		return _aiming_handler.GetDirection()
+
+	proc/GetMuzzlePosition()
+		var vector2/muzzle_position = _aiming_handler.GetDirection()
+		muzzle_position.Scale(body_length, Vector2Flags.Modify)
+		muzzle_position.Add(entity.GetCenterPosition(), Vector2Flags.Modify)
+		return muzzle_position
+
+	proc/GetMuzzleVelocity()
+		var vector2/muzzle_velocity = GetDirection()
+		muzzle_velocity = muzzle_velocity.Scale(muzzle_speed)
+		return muzzle_velocity
+
+
+	// === Concrete gun types
+
+	inaccurate
+		body_length = 40
+		var
+			inaccuracy = 2
 
 		GetDirection()
-			return _aiming_handler.GetDirection()
+			var vector2/direction = ..()
+			return direction.Turn(
+				pick(1, -1) * inaccuracy * (2 * rand() - 1) ** 2)
 
-		GetMuzzlePosition()
-			var vector2/muzzle_position = _aiming_handler.GetDirection()
-			muzzle_position.Scale(body_length, Vector2Flags.Modify)
-			muzzle_position.Add(player.GetCenterPosition(), Vector2Flags.Modify)
-			return muzzle_position
+		spread
+			inaccuracy = 10
+			shot_cooldown = new (5)
+			body_length = 35
 
-		GetMuzzleVelocity()
-			var vector2/muzzle_velocity = GetDirection()
-			muzzle_velocity = muzzle_velocity.Scale(muzzle_speed)
-			return muzzle_velocity
+			var
+				spread_count = 12
+				velocity_max_scale = 0.3
 
-Gun/inaccurate
-	var
-		inaccuracy = 2
+			Shoot()
+				var
+					Entity/bullet/bullet
+					Physics/bullet/bullet_physics
+					n
+					random_velocity_scale
 
-	GetDirection()
-		var vector2/direction = ..()
-		return direction.Turn(pick(1, -1) * inaccuracy * (2 * rand() - 1) ** 2)
+				for(n in 1 to spread_count)
+					bullet = ..()
+					bullet_physics = bullet.GetComponent(/Physics)
 
-Gun/spread
-	parent_type = /Gun/inaccurate
+					bullet_physics.drag = 2
+					bullet_physics.minimum_speed = 300
 
-	inaccuracy = 10
-	shot_cooldown = new (5)
-
-	var
-		spread_count = 12
-		velocity_max_scale = 0.3
-
-	Shoot()
-		var Bullet/bullet, n, random_velocity_scale
-		for(n in 1 to spread_count)
-			bullet = ..()
-
-			bullet.drag = 2
-			bullet.minimum_speed = 300
-
-			random_velocity_scale = 1 - rand() * velocity_max_scale
-			bullet.SetVelocity(bullet.velocity.Scale(random_velocity_scale))
+					random_velocity_scale = 1 - rand() * velocity_max_scale
+					bullet_physics.SetVelocity(
+						bullet_physics.velocity.Scale(random_velocity_scale))

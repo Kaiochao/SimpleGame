@@ -1,62 +1,55 @@
 mob/lobby
+	var
+		Entity/player
+
 	Login()
-		name = client.key
-		gender = client.gender
 		join()
+
+		spawn(1) while(client)
+			var update_loop/Time = player.GetComponentUpdateLoop()
+			winset(src, ":window", "title=\"[world.name] ([world.cpu]%, world.fps: [world.fps], dt: [Time.delta_time], updaters: [length(Time.updaters)], time: [world.time])\"")
+			sleep world.tick_lag
 
 	Logout()
 		key = null
 		loc = null
+		if(player)
+			player.Destroy()
 
 	verb
 		join()
+			player = new /Entity/player (null, client)
+
 			var
-				vector2/start = new (world.maxx * TILE_WIDTH / 2, world.maxy * TILE_HEIGHT / 2)
-				mob/player/player
-				WeaponHandler/weapon_handler
-				Gun
-					inaccurate/rifle
+				WeaponHandler/weapon_handler = player.GetComponent(/WeaponHandler)
+
+				Gun/inaccurate
+					rifle
 					spread/shotgun
 
-			player = new
-			player.name = name
-			player.gender = gender
-			player.client = client
-			player.input_handler = player.client
+				global/vector2/start_position = new /vector2 (
+					world.maxx * TILE_WIDTH / 2,
+					world.maxy * TILE_HEIGHT / 2)
 
-			EVENT_ADD(player.OnUpdate, player, /mob/player/proc/ShowCpuUsage)
+			player.SetCenter(start_position, 1)
 
-			player.AddComponents(newlist(
-				/MovementHandler/Player,
-				/AimingHandler/Player,
-				/WeaponHandler/Player))
+			rifle = new
+			rifle.SetBody(new /obj/gun_body/rifle)
 
-			weapon_handler = player.GetComponent(/WeaponHandler)
-			if(weapon_handler)
-				rifle = new
-				rifle.SetBody(new /obj/gun)
+			shotgun = new
+			shotgun.spread_count = 10 // 25
+		//	shotgun.shot_cooldown = new /cooldown (0.5)
+			shotgun.SetBody(new /obj/gun_body/shotgun)
 
-				shotgun = new
-				shotgun.spread_count = 25
-				shotgun.shot_cooldown = new /cooldown (0.5)
-				shotgun.SetBody(new /obj/gun/shotgun)
+			weapon_handler.SetWeapons(list(rifle, shotgun))
+			weapon_handler.EquipWeapon(rifle)
 
-				weapon_handler.SetWeapons(list(rifle, shotgun))
-				weapon_handler.EquipWeapon(rifle)
-
-			player.SetCenter(start, 1)
-
-mob/player
-	proc
-		ShowCpuUsage()
-			if(client)
-				var UpdateLoop/Time = GetComponentUpdateLoop()
-				winset(src, ":window", "title=\"[world.name] ([world.cpu]%, world.fps: [world.fps], dt: [Time.delta_time], time: [world.time])\"")
-
-obj/gun
+obj/gun_body
 	icon_state = "rect"
 	color = "black"
-	transform = matrix(3/32, 0, 0, 0, 24/32, 24)
+
+	rifle
+		transform = matrix(3/32, 0, 0, 0, 24/32, 24)
 
 	shotgun
 		transform = matrix(5/32, 0, 0, 0, 20/32, 20)

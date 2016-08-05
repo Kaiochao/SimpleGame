@@ -1,11 +1,11 @@
 AbstractType(Component)
 
-	var
-		global
-			UpdateLoop/Time
+	var global/update_loop/Time
 
-		tmp
-			mob/player/player
+	var tmp/Entity/entity
+
+	proc/GetComponent(ComponentType)
+		return entity.GetComponent(ComponentType)
 
 	/*
 		Optional callbacks:
@@ -19,17 +19,14 @@ AbstractType(Component)
 	Updater
 		parent_type = /Interface
 
-		proc
-			Update()
+		proc/Update()
 
 	Starter
 		parent_type = /Interface
 
-		proc
-			Start()
+		proc/Start()
 
 	Destroyer
 		parent_type = /Interface
 
-		proc
-			Destroy()
+		proc/Destroy()

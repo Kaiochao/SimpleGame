@@ -15,13 +15,13 @@ AbstractType(Weapon)
 	proc
 		Start()
 			if(body)
-				player.underlays += body
+				entity.underlays += body
 
-			_aiming_handler = player.GetComponent(/AimingHandler)
+			_aiming_handler = entity.GetComponent(/AimingHandler)
 
 		Destroy()
 			if(body)
-				player.underlays -= body
+				entity.underlays -= body
 
 			_aiming_handler = null
 
@@ -37,9 +37,9 @@ AbstractType(Weapon)
 				var vector2/aim = _aiming_handler.GetDirection()
 				if(aim.Equals(_last_aim)) return
 				_last_aim = aim
-				animate(player,
+				animate(entity,
 					time = world.tick_lag,
 					easing = SINE_EASING,
 					flags = ANIMATION_END_NOW,
-					transform = initial(player.transform) * Math.RotationMatrix(aim)
+					transform = initial(entity.transform) * Math.RotationMatrix(aim)
 				)

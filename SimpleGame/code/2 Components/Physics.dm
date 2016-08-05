@@ -1,6 +1,8 @@
-var UpdateLoop/physics_loop = new ("_PhysicsUpdate")
+var update_loop/physics_loop = new ("_PhysicsUpdate")
 
-atom/movable
+Physics
+	parent_type = /Component
+
 	/* Distance covered per second, in pixels.
 		Actual movement occurs every tick of the Physics Clock.
 		Setter: SetVelocity() (don't set this directly)
@@ -32,7 +34,7 @@ atom/movable
 		Only called when velocity is non-zero.
 		Available for overriding.
 	*/
-	proc/PhysicsUpdate(UpdateLoop/Time)
+	proc/PhysicsUpdate(update_loop/Time)
 
 
 
@@ -49,12 +51,12 @@ atom/movable
 			_physics_enabled = FALSE
 			physics_loop.Remove(src)
 
-	proc/_PhysicsUpdate(UpdateLoop/Time)
-		if(!z)
+	proc/_PhysicsUpdate(update_loop/Time)
+		if(!entity.z)
 			SetVelocity()
 
 		else
 			PhysicsUpdate(Time)
 
 			if(velocity)
-				Translate(velocity.Multiply(Time.delta_time), translate_flags)
+				entity.Translate(velocity.Multiply(Time.delta_time), translate_flags)
