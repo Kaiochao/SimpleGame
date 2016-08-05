@@ -25,16 +25,7 @@ mob/player
 
 	New()
 		..()
-		var global/obj/body
-		if(!body)
-			body = new
-			var mutable_appearance/a = new (body)
-			a.icon_state = "oval"
-			a.color = "blue"
-			a.transform *= 0.75
-			body.appearance = a
-
-		overlays += body
+		_InitializeAppearance()
 
 		_is_updater = hascall(src, "Update")
 		if(_is_updater)
@@ -53,6 +44,14 @@ mob/player
 	EVENT(OnDestroy)
 
 	proc
+		_InitializeAppearance()
+			overlays = list(/obj/player_body)
+
+			/obj/player_body
+				icon_state = "oval"
+				color = "blue"
+				transform = matrix(24/32, 0, 0, 0, 24/32, 0)
+
 		_AddUpdater(Updater)
 			_component_update_loop = GetComponentUpdateLoop()
 			_component_update_loop.Add(Updater)
