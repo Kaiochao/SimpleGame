@@ -46,7 +46,8 @@ object_pool
 
 	/*
 		Return an object to the pool.
-		This is called by the object's OnDestroyed event, which is required for all poolable objects.
+		This is called by the object's OnDestroyed event, which is required for
+		all poolable objects.
 	*/
 	proc/Push(object_pool/Poolable/Object)
 		if(!pooled_objects[Object])
