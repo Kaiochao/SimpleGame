@@ -50,7 +50,7 @@ Entity/player
 
 		physics.translate_flags = TranslateFlags.EnableSliding
 
-/obj/player_body
+obj/player_body
 	icon_state = "oval"
 	color = "blue"
 	transform = matrix(24/32, 0, 0, 0, 24/32, 0)
