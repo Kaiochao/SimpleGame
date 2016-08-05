@@ -11,4 +11,4 @@ world
 turf/checker
 	icon_state = "rect"
 	color = "silver"
-	New() color = (x + y) % 2 ? "#565" : "#676"
+	New() color = (x + y) % 2 ? "#446644" : "#486a48"
