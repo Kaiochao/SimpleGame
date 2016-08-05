@@ -15,7 +15,7 @@ update_loop
 				last_update_time = new
 
 			updaters[Updater] = TRUE
-			last_update_time[Updater] = world.time - world.tick_lag
+			last_update_time[Updater] = world.time// - world.tick_lag
 
 		Remove(Updater)
 			if(updaters && updaters[Updater])
@@ -31,7 +31,7 @@ update_loop
 	New(Callback)
 		if(!isnull(Callback))
 			callback = Callback
-			
+
 		Start()
 
 	proc/Start()
