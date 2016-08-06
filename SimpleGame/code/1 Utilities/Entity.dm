@@ -29,6 +29,9 @@ AbstractType(Entity)
 		*/
 		_is_update_enabled
 
+	EVENT(OnUpdate)
+	EVENT(OnDestroy)
+
 	New()
 		..()
 		AddDefaultComponents()
@@ -39,9 +42,6 @@ AbstractType(Entity)
 		RemoveComponents(_components)
 		SetUpdateEnabled(FALSE)
 		..()
-
-	EVENT(OnUpdate)
-	EVENT(OnDestroy)
 
 	proc/IsUpdateEnabled()
 		return _is_update_enabled
@@ -93,14 +93,22 @@ AbstractType(Entity)
 	proc/GetComponent(ComponentType)
 		return locate(ComponentType) in _components
 
-	proc/HasComponent(Component)
-		return ispath(Component) \
-		? !!GetComponent(Component) \
-		: _components && _components[Component]
+	/*
 
+		Add a single component to this Entity.
+		* If Component has Start defined, it will be called after being added.
+		* If Component has Update defined, it will be called every update as
+		long as Entity.IsUpdateEnabled() is TRUE.
+
+	*/
 	proc/AddComponent(Component/Component)
 		AddComponents(list(Component))
 
+	/*
+
+
+
+	*/
 	proc/RemoveComponent(Component/Component)
 		RemoveComponents(list(Component))
 
@@ -108,8 +116,14 @@ AbstractType(Entity)
 
 		Add a bunch of components at once.
 
-		This is preferred to adding components separately with AddComponent()
-		because Component.Start() is called AFTER everything is added.
+		This is preferred to adding components separately with AddComponent().
+		Component.Start() is called AFTER everything is added, which allows for
+		dependence between components.
+
+		Basically, using X = GetComponent() in Component.Start() will work as
+		long as X was added before or at the same time as Component.
+
+		(But X.Start() may not have been called yet.)
 
 	*/
 	proc/AddComponents(Components[])
