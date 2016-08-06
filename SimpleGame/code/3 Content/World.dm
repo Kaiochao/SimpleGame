@@ -21,8 +21,7 @@ atom
 turf
 	random
 		can_map_initialize = TRUE
-
-		MapInitialize()
+		MapInitializing()
 			if(prob(95))
 				new /turf/checker (src)
 			else
@@ -33,14 +32,12 @@ turf
 		color = "gray"
 		density = TRUE
 		can_map_initialize = TRUE
-
-		MapInitialize()
-			color = (x + y) % 2 ? "#222222" : "#262626"
+		MapInitializing()
+			color = (x + y) & 1 ? "#222222" : "#262626"
 
 	checker
 		icon_state = "rect"
 		color = "silver"
 		can_map_initialize = TRUE
-
-		MapInitialize()
-			color = (x + y) % 2 ? "#446644" : "#486a48"
+		MapInitializing()
+			color = (x + y) & 1 ? "#446644" : "#486a48"
