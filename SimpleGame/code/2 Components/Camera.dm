@@ -14,9 +14,9 @@ Component/Camera
 		_client.perspective = EYE_PERSPECTIVE
 
 	proc/Destroy()
-		_client = null
 		_client.eye = _client.mob
 		_client.perspective = initial(_client.perspective)
+		_client = null
 
 	proc/Update()
 		var client_pixel_x = x - entity.GetCenterX()

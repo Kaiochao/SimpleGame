@@ -34,14 +34,14 @@ Component/WeaponHandler/player
 	proc/EquipNextWeapon()
 		var Component/Weapon/weapons[] = GetWeapons()
 
-		if(!(weapons && weapons.len))
+		if(!length(weapons))
 			return
 
 		var index = weapons.Find(_weapon) + 1
 
 		if(index < 1)
-			index = weapons.len
-		else if(index > weapons.len)
+			index = length(weapons)
+		else if(index > length(weapons))
 			index = 1
 
 		EquipWeapon(weapons[index])
@@ -49,14 +49,14 @@ Component/WeaponHandler/player
 	proc/EquipPreviousWeapon()
 		var Component/Weapon/weapons[] = GetWeapons()
 
-		if(!(weapons && weapons.len))
+		if(!length(weapons))
 			return
 
 		var index = weapons.Find(_weapon) - 1
 
 		if(index < 1)
-			index = weapons.len
-		else if(index > weapons.len)
+			index = length(weapons)
+		else if(index > length(weapons))
 			index = 1
 
 		EquipWeapon(weapons[index])

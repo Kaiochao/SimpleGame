@@ -1,5 +1,5 @@
 client
-	fps = 60
+	tick_lag = 100
 
 	New()
 		var global/vignette/vignette = new (VignetteMode.ThickLight)

@@ -76,7 +76,7 @@ atom/movable
 	proc/SetLocation()
 		var atom/Loc, StepX, StepY
 
-		switch(args.len)
+		switch(length(args))
 			if(0)
 
 			if(1)
@@ -91,7 +91,7 @@ atom/movable
 					StepY = args[3]
 				else CRASH("Expected 3-argument form: (atom/Loc, StepX, StepY)")
 
-			else CRASH("Unexpected [args.len]-argument form.")
+			else CRASH("Unexpected [length(args)]-argument form.")
 
 		loc = Loc
 		step_x = StepX
@@ -121,7 +121,7 @@ atom/movable
 	proc/SetPosition()
 		var LowerX, LowerY, Z
 
-		switch(args.len)
+		switch(length(args))
 			if(0)
 				SetLocation()
 
@@ -152,7 +152,7 @@ atom/movable
 					Z = args[3]
 				else CRASH("Expected 3-argument form: (LowerX as num, LowerY as num, Z as num.")
 
-			else CRASH("Unexpected [args.len]-argument form.")
+			else CRASH("Unexpected [length(args)]-argument form.")
 
 		var
 			new_tile_x = -round(LowerX / -TILE_WIDTH)
@@ -200,7 +200,7 @@ atom/movable
 	proc/SetCenter()
 		var CenterX, CenterY, Z
 
-		switch(args.len)
+		switch(length(args))
 			if(0)
 				SetLocation()
 
@@ -231,7 +231,7 @@ atom/movable
 					Z = args[3]
 				else CRASH("Expected 3-argument form: (CenterX as num, CenterY as num, Z as num.")
 
-			else CRASH("Unexpected [args.len]-argument form.")
+			else CRASH("Unexpected [length(args)]-argument form.")
 
 		SetPosition(CenterX - round(bound_width / 2), CenterY - round(bound_height / 2), Z)
 

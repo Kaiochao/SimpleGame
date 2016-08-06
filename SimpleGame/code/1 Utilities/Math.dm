@@ -38,3 +38,12 @@ Math
 
 		Round(N, M = 1)
 			return round(N, M)
+
+		Random()
+			return rand()
+
+		RandomInteger(Lower, Upper)
+			return rand(min(Lower, Upper), max(Lower, Upper))
+
+		RandomDecimal(Lower, Upper)
+			return Interpolate(min(Lower, Upper), max(Lower, Upper), Random())

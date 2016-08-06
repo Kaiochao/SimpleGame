@@ -1,16 +1,5 @@
-var BulletStatic/Bullet = new
-
-BulletStatic
-	var global
-		object_pool/pool
-
-	proc
-		GetObjectPool()
-			if(!pool)
-				pool = new /object_pool {
-					name = "bullet pool"
-				} (/Entity/bullet, 1000, 100)
-			return pool
+var object_pool/bullet_pool = new /object_pool (
+	/Entity/bullet, 500, 100)
 
 Component/physics/bullet
 	var
@@ -22,6 +11,9 @@ Component/physics/bullet
 
 		_minimum_speed_squared
 		_old_minimum_speed
+
+	GetOwnName()
+		return "bullet physics"
 
 	PhysicsUpdate(update_loop/Time)
 		var
@@ -51,7 +43,7 @@ Entity/bullet
 	transform = matrix(3/32, 0, 0, 0, 9/32, 0)
 
 	AddDefaultComponents()
-		DisableUpdate()
+		SetUpdateEnabled(FALSE)
 		AddComponents(newlist(
 			/Component/physics/bullet
 			))
@@ -63,22 +55,24 @@ Entity/bullet
 		. = ..()
 		var atom/movable/translate_result/result = .
 		if(!result || result.bump_dir)
+			var Entity/particle/smoke = ObjectPool.Pop(particle_pool)
+			smoke.AddComponent(new /Component/ParticleEffector/smoke)
+			smoke.SetCenter(src)
 			Pool()
 
-	EVENT(OnPooled, object_pool/Poolable/Object)
-	EVENT(OnUnpooled, object_pool/Poolable/Object)
+	proc/GetObjectPool()
+		return bullet_pool
 
-	OnUnpooled()
-		EnableUpdate()
-		..()
+	proc/Unpooled(object_pool/ObjectPool)
+		SetUpdateEnabled(TRUE)
 
-	proc/Pool()
-		DisableUpdate()
+	proc/Pooled(object_pool/ObjectPool)
+		SetUpdateEnabled(FALSE)
 
 		var Component/physics/physics = GetComponent(/Component/physics)
 		physics.SetVelocity()
-
 		loc = null
 
-		if(OnPooled)
-			OnPooled(src)
+	proc/Pool()
+		if(!ObjectPool.Push(GetObjectPool(), src))
+			Pooled()
