@@ -37,6 +37,7 @@
 #include "code\1 Utilities\cooldown.dm"
 #include "code\1 Utilities\Debug.dm"
 #include "code\1 Utilities\Entity.dm"
+#include "code\1 Utilities\MapInitialization.dm"
 #include "code\1 Utilities\Math.dm"
 #include "code\1 Utilities\object pool.dm"
 #include "code\1 Utilities\PixelMovement.dm"

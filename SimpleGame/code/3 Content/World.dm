@@ -10,9 +10,20 @@ world
 
 	mob = /mob/lobby
 
+	New()
+		InitializeMap()
+		..()
+
+atom
+	New()
+		CheckMapInitialization()
+		..()
+
 turf
 	random
-		New()
+		can_map_initialize = TRUE
+
+		MapInitialize()
 			if(prob(95))
 				new /turf/checker (src)
 			else
@@ -22,9 +33,15 @@ turf
 		icon_state = "rect"
 		color = "gray"
 		density = TRUE
-		New() color = (x + y) % 2 ? "#222222" : "#262626"
+		can_map_initialize = TRUE
+
+		MapInitialize()
+			color = (x + y) % 2 ? "#222222" : "#262626"
 
 	checker
 		icon_state = "rect"
 		color = "silver"
-		New() color = (x + y) % 2 ? "#446644" : "#486a48"
+		can_map_initialize = TRUE
+
+		MapInitialize()
+			color = (x + y) % 2 ? "#446644" : "#486a48"
