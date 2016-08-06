@@ -36,6 +36,7 @@ AbstractType(Entity)
 			SetUpdateEnabled(TRUE)
 
 	Del()
+		RemoveComponents(_components)
 		SetUpdateEnabled(FALSE)
 		..()
 
@@ -112,6 +113,8 @@ AbstractType(Entity)
 
 	*/
 	proc/AddComponents(Components[])
+		if(!length(Components)) return
+	
 		if(!_components)
 			_components = new
 
@@ -162,6 +165,8 @@ AbstractType(Entity)
 
 	*/
 	proc/RemoveComponents(Components[])
+		if(!length(Components)) return
+
 		var global
 			item
 			Component
