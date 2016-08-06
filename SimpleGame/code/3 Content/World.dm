@@ -2,13 +2,12 @@ world
 	name = "Shooter"
 
 	fps = 20
+	view = 12
+	mob = /mob/lobby
 
 	maxx = 50
 	maxy = 50
-	view = 12
 	turf = /turf/random
-
-	mob = /mob/lobby
 
 	New()
 		InitializeMap()
