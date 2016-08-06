@@ -4,6 +4,17 @@ AbstractType(Component)
 
 	var tmp/Entity/entity
 
+	var tmp/name
+
+	proc/GetName()
+		if(isnull(name)) name = "[entity.name]:[GetOwnName()]"
+		return name
+
+	proc/GetOwnName()
+		var type_text = "[type]"
+		return copytext(type_text,
+			findlasttext(type_text, "/") + 1)
+
 	proc/GetComponent(ComponentType)
 		return entity.GetComponent(ComponentType)
 

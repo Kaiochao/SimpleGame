@@ -63,10 +63,11 @@ AbstractType(Component/Weapon/Gun)
 
 	proc/Shoot()
 		var
-			object_pool/bullet_pool = global.Bullet.GetObjectPool()
-			Entity/bullet/bullet = bullet_pool.Pop()
+			Entity/bullet/bullet =	ObjectPool.Pop(bullet_pool)
+
 			Component/physics/bullet/bullet_physics = bullet.GetComponent(
 				/Component/physics)
+
 			vector2
 				muzzle_position = GetMuzzlePosition()
 				to_muzzle = muzzle_position.Subtract(entity.GetCenterPosition())
@@ -121,7 +122,7 @@ AbstractType(Component/Weapon/Gun)
 			body_length = 35
 
 			var
-				spread_count = 12
+				spread_count = 10
 				velocity_max_scale = 0.3
 
 			Shoot()
@@ -139,5 +140,8 @@ AbstractType(Component/Weapon/Gun)
 					bullet_physics.minimum_speed = 300
 
 					random_velocity_scale = 1 - rand() * velocity_max_scale
-					bullet_physics.SetVelocity(
-						bullet_physics.velocity.Scale(random_velocity_scale))
+					if(bullet_physics.velocity)
+						bullet_physics.SetVelocity(
+							bullet_physics.velocity.Scale(
+								random_velocity_scale)
+							)

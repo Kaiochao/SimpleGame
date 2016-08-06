@@ -1,56 +1,67 @@
+var update_loop/component_loop
+
 AbstractType(Entity)
 	parent_type = /obj
 
-	var global
-		// If no mobs exist, does this reference prevent garbage collection?
-		update_loop/_component_update_loop
-
 	var tmp
+		/*
+			Set of components added to this entity.
+		*/
 		_components[]
+
+		/*
+			Subset of components; components with an Update callback.
+		*/
 		_component_updaters[]
+
+		/*
+			Subset of components; components with a Destroy callback.
+		*/
 		_component_destroyers[]
 
-		_is_destroyed = FALSE
+		/*
+			Prevents multiple destruction of the same entity.
+		*/
+		_is_destroyed
 
-		_enabled = TRUE
+		/*
+			Property for IsUpdating() and SetUpdateEnabled(Value)
+		*/
+		_is_update_enabled
 
 	New()
 		..()
 		AddDefaultComponents()
-
-		if(IsUpdateEnabled())
-			_enabled = FALSE
-			EnableUpdate()
+		if(isnull(_is_update_enabled))
+			SetUpdateEnabled(TRUE)
 
 	Del()
-		DisableUpdate()
+		SetUpdateEnabled(FALSE)
 		..()
 
 	EVENT(OnUpdate)
 	EVENT(OnDestroy)
 
 	proc/IsUpdateEnabled()
-		return _enabled
+		return _is_update_enabled
 
-	proc/EnableUpdate()
-		if(_enabled) return
-		_enabled = TRUE
-		_component_update_loop = GetComponentUpdateLoop()
-		_component_update_loop.Add(src)
-
-	proc/DisableUpdate()
-		if(!_enabled) return
-		_enabled = FALSE
-		_component_update_loop.Remove(src)
-		if(!_component_update_loop.updaters)
-			_component_update_loop = null
+	proc/SetUpdateEnabled(Value)
+		_is_update_enabled = Value
+		if(Value)
+			if(length(_component_updaters))
+				if(!component_loop)
+					component_loop = new /update_loop ("Update")
+				component_loop.Add(src)
+		else
+			if(component_loop)
+				component_loop.Remove(src)
+				if(!component_loop.updaters)
+					component_loop = null
 
 	proc/AddDefaultComponents()
 
-	proc/GetComponentUpdateLoop()
-		if(!_component_update_loop)
-			_component_update_loop = new ("Update")
-		return _component_update_loop
+	proc/GetComponentLoop()
+		return component_loop
 
 	proc/Update()
 		if(OnUpdate)
@@ -61,7 +72,7 @@ AbstractType(Entity)
 		if(_is_destroyed) return
 
 		// Stop updating.
-		DisableUpdate()
+		SetUpdateEnabled(FALSE)
 
 		// Remove all components.
 		RemoveComponents(_components)
@@ -70,8 +81,11 @@ AbstractType(Entity)
 		if(OnDestroy)
 			OnDestroy()
 
+		SetLocation()
+
 		// Prevent excess destruction.
 		_is_destroyed = TRUE
+
 
 	// ====== Components!
 
@@ -86,6 +100,9 @@ AbstractType(Entity)
 	proc/AddComponent(Component/Component)
 		AddComponents(list(Component))
 
+	proc/RemoveComponent(Component/Component)
+		RemoveComponents(list(Component))
+
 	/*
 
 		Add a bunch of components at once.
@@ -99,15 +116,20 @@ AbstractType(Entity)
 			_components = new
 
 		var global
+			update_loop/component_loop
 			item
 			Component
 				component
 				Starter/starter
 
+		component_loop = GetComponentLoop()
+
 		for(item in Components)
 			component = item
 			component.entity = src
-			component.Time = GetComponentUpdateLoop()
+			component.GetName()
+
+			component.Time = component_loop
 
 			if(!_components[component])
 				_components[component] = TRUE
@@ -117,6 +139,8 @@ AbstractType(Entity)
 					_component_updaters = new
 				_component_updaters[component] = TRUE
 				EVENT_ADD(OnUpdate, component, "Update")
+
+				SetUpdateEnabled(IsUpdateEnabled())
 
 			if(hascall(component, "Destroy"))
 				if(!_component_destroyers)
@@ -128,9 +152,6 @@ AbstractType(Entity)
 			if(hascall(item, "Start"))
 				starter = item
 				starter.Start(src)
-
-	proc/RemoveComponent(Component/Component)
-		RemoveComponents(list(Component))
 
 	/*
 
@@ -152,7 +173,7 @@ AbstractType(Entity)
 				destroyer = item
 
 				_component_destroyers -= destroyer
-				if(!_component_destroyers.len)
+				if(!length(_component_destroyers))
 					_component_destroyers = null
 
 				EVENT_REMOVE(OnDestroy, destroyer, "Destroy")
@@ -163,14 +184,16 @@ AbstractType(Entity)
 			component = item
 
 			_components -= component
-			if(!_components.len)
+			if(!length(_components))
 				_components = null
 
 			if(_component_updaters && _component_updaters[component])
 				_component_updaters -= component
-				if(!_component_updaters.len)
+				if(!length(_component_updaters))
 					_component_updaters = null
 				EVENT_REMOVE(OnUpdate, component, "Update")
+
+				SetUpdateEnabled(IsUpdateEnabled())
 
 			component.entity = null
 			component.Time = null

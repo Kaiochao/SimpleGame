@@ -1,4 +1,10 @@
-var update_loop/physics_loop = new ("_PhysicsUpdate")
+var update_loop/physics_loop/physics_loop = new ("_PhysicsUpdate")
+
+update_loop/physics_loop
+	Update(Updater)
+		if(world.tick_usage > 75)
+			sleep world.tick_lag
+		..()
 
 Component/physics
 	/* Distance covered per second, in pixels.
@@ -9,10 +15,11 @@ Component/physics
 		vector2/velocity
 		TranslateFlags/translate_flags = 0
 
+	var tmp/_is_physics_enabled = FALSE
+
 	New()
 		..()
-		if(velocity)
-			SetVelocity(velocity)
+		SetVelocity(velocity)
 
 	/* Set velocity.
 		See: PhysicsUpdate()
@@ -23,31 +30,21 @@ Component/physics
 
 		if(Velocity && !Velocity.IsZero())
 			velocity = Velocity.Copy()
-			_EnablePhysics()
+			if(_is_physics_enabled) return
+			_is_physics_enabled = TRUE
+			physics_loop.Add(src)
+
 		else
 			velocity = null
-			_DisablePhysics()
+			if(_is_physics_enabled)
+				_is_physics_enabled = FALSE
+				physics_loop.Remove(src)
 
 	/* Called every physics-tick, just before velocity is applied.
 		Only called when velocity is non-zero.
 		Available for overriding.
 	*/
 	proc/PhysicsUpdate(update_loop/Time)
-
-
-
-
-	var tmp/_physics_enabled = FALSE
-
-	proc/_EnablePhysics()
-		if(_physics_enabled) return
-		_physics_enabled = TRUE
-		physics_loop.Add(src)
-
-	proc/_DisablePhysics()
-		if(_physics_enabled)
-			_physics_enabled = FALSE
-			physics_loop.Remove(src)
 
 	proc/_PhysicsUpdate(update_loop/Time)
 		if(!entity.z)

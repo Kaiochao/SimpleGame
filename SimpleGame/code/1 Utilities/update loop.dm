@@ -15,13 +15,13 @@ update_loop
 				last_update_time = new
 
 			updaters[Updater] = TRUE
-			last_update_time[Updater] = world.time// - world.tick_lag
+			last_update_time[Updater] = world.time
 
 		Remove(Updater)
-			if(updaters && updaters[Updater])
+			if(length(updaters))
 				updaters -= Updater
 
-				if(!updaters.len)
+				if(!length(updaters))
 					updaters = null
 					last_update_time = null
 
@@ -32,32 +32,29 @@ update_loop
 		if(!isnull(Callback))
 			callback = Callback
 
-		Start()
+		StartUpdating()
 
-	proc/Start()
+	proc/StartUpdating()
 		set waitfor = FALSE
 
 		for()
 			if(updaters)
 				while(updaters.Remove(null))
-				if(!updaters.len) updaters = null
+				if(!length(updaters)) updaters = null
 
 			if(updaters)
-				Update()
+				UpdateUpdaters()
 
 			sleep world.tick_lag
 
-	proc/Update()
-		var global
-			item
-			updater
-			time
-
+	proc/UpdateUpdaters()
 		to_update = updaters.Copy()
-		for(item in to_update)
-			updater = item
-			time = world.time
-			delta_time = (1e5 * time - 1e5 * last_update_time[updater]) / 1e6
-			last_update_time[updater] = time
-			call(updater, callback)(src)
+		for(var/item in to_update)
+			Update(item)
 		to_update = null
+
+	proc/Update(Updater)
+		var time = world.time
+		delta_time = (time - last_update_time[Updater]) / 10
+		last_update_time[Updater] = time
+		call(Updater, callback)(src)
