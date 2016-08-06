@@ -54,8 +54,10 @@
 #include "code\2 Components\Wrapper\Wrapper.dm"
 #include "code\3 Content\client.dm"
 #include "code\3 Content\lobby.dm"
-#include "code\3 Content\World.dm"
+#include "code\3 Content\world.dm"
 #include "code\3 Content\Entity\bullet.dm"
 #include "code\3 Content\Entity\player.dm"
+#include "code\3 Content\Particle\particle.dm"
+#include "code\3 Content\Particle\ParticleEffector.dm"
 #include "code\3 Content\Vignette\Vignette.dm"
 // END_INCLUDE
