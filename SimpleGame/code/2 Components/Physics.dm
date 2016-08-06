@@ -1,6 +1,6 @@
-var update_loop/physics_loop/physics_loop = new ("_PhysicsUpdate")
+var update_loop/PhysicsLoop/PhysicsLoop = new ("_PhysicsUpdate")
 
-update_loop/physics_loop
+update_loop/PhysicsLoop
 	Update(Updater)
 		if(world.tick_usage > 75)
 			sleep world.tick_lag
@@ -32,13 +32,13 @@ Component/physics
 			velocity = Velocity.Copy()
 			if(_is_physics_enabled) return
 			_is_physics_enabled = TRUE
-			physics_loop.Add(src)
+			PhysicsLoop.Add(src)
 
 		else
 			velocity = null
 			if(_is_physics_enabled)
 				_is_physics_enabled = FALSE
-				physics_loop.Remove(src)
+				PhysicsLoop.Remove(src)
 
 	/* Called every physics-tick, just before velocity is applied.
 		Only called when velocity is non-zero.

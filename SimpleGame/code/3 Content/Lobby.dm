@@ -18,22 +18,26 @@ proc/jointext_short(List[], Separator = ", ", EndCount = 3)
 				[jointext(List, Separator, -EndCount, length)]"
 
 obj/stat_toggle
-	var _is_showing = FALSE
+	var tmp
+		_is_showing
+		_text
 
 	proc/IsShowing() return _is_showing
 	proc/SetShowing(Value)
 		_is_showing = Value
 		name = Value ? _text || " " : "(show)"
 
-	var _text = ""
 	proc/GetText() return _text
 	proc/SetText(Value)
 		_text = "[Value]"
 		SetShowing(IsShowing())
 
-	New() SetShowing(IsShowing())
+	New(Text = "", IsShowing = FALSE)
+		SetText(Text)
+		SetShowing(IsShowing)
 
-	MouseDown() SetShowing(!IsShowing())
+	MouseDown()
+		SetShowing(!IsShowing())
 
 mob/lobby
 	var tmp
@@ -48,22 +52,20 @@ mob/lobby
 		physics_updaters_list_stat = new
 
 	Stat()
-		var
-			update_loop/Time = component_loop
-			update_loop/Physics = physics_loop
-
 		statpanel("DEBUG")
 
 		stat("world.cpu", "[world.cpu]%")
 
-		stat("Updating Entities", "[Time && length(Time.updaters)]")
+		stat("Updating Entities",
+			"[ComponentLoop && length(ComponentLoop.updaters)]")
 		updaters_list_stat.SetText(
-			jointext_short(Time.updaters, ", \n"))
+			jointext_short(ComponentLoop.updaters, ", \n"))
 		stat(updaters_list_stat)
 
-		stat("Physics Updaters", "[Physics && length(Physics.updaters)]")
+		stat("Physics Updaters",
+			"[PhysicsLoop && length(PhysicsLoop.updaters)]")
 		physics_updaters_list_stat.SetText(
-			jointext_short(Physics.updaters, ", \n"))
+			jointext_short(PhysicsLoop.updaters, ", \n"))
 		stat(physics_updaters_list_stat)
 
 	Logout()
@@ -76,14 +78,8 @@ mob/lobby
 		player = new /Entity/player (null, client)
 
 		var
-			Component
-				WeaponHandler/weapon_handler = player.GetComponent(
-					/Component/WeaponHandler)
-
-				Weapon/Gun/inaccurate
-					rifle
-					spread/shotgun
-
+			Component/WeaponHandler/weapon_handler = player.GetComponent(
+				/Component/WeaponHandler)
 			global/vector2/start_position = new /vector2 (
 				world.maxx * TILE_WIDTH / 2,
 				world.maxy * TILE_HEIGHT / 2)
@@ -91,12 +87,11 @@ mob/lobby
 		player.SetCenter(start_position, 1)
 
 		if(weapon_handler)
-			rifle = new
-			rifle.SetBody(new /obj/gun_body/rifle)
+			var Component/Weapon/Gun/inaccurate
+				rifle = new
+				spread/shotgun = new
 
-			shotgun = new
-		//	shotgun.spread_count = 25
-		//	shotgun.shot_cooldown = new /cooldown (0.5)
+			rifle.SetBody(new /obj/gun_body/rifle)
 			shotgun.SetBody(new /obj/gun_body/shotgun)
 
 			weapon_handler.SetWeapons(list(rifle, shotgun))

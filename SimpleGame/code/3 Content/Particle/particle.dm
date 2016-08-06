@@ -1,4 +1,4 @@
-var object_pool/particle_pool = new /object_pool {
+var object_pool/ParticlePool = new /object_pool {
 	push_on_instantiation = TRUE
 	} (/Entity/particle, 500, 100)
 

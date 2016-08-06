@@ -63,7 +63,7 @@ AbstractType(Component/Weapon/Gun)
 
 	proc/Shoot()
 		var
-			Entity/bullet/bullet =	ObjectPool.Pop(bullet_pool)
+			Entity/bullet/bullet =	ObjectPool.Pop(BulletPool)
 
 			Component/physics/bullet/bullet_physics = bullet.GetComponent(
 				/Component/physics)

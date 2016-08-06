@@ -1,4 +1,4 @@
-var update_loop/component_loop
+var update_loop/ComponentLoop
 
 AbstractType(Entity)
 	parent_type = /obj
@@ -43,31 +43,6 @@ AbstractType(Entity)
 		SetUpdateEnabled(FALSE)
 		..()
 
-	proc/IsUpdateEnabled()
-		return _is_update_enabled
-
-	proc/SetUpdateEnabled(Value)
-		_is_update_enabled = Value
-		if(Value)
-			if(length(_component_updaters))
-				if(!component_loop)
-					component_loop = new /update_loop ("Update")
-				component_loop.Add(src)
-		else
-			if(component_loop)
-				component_loop.Remove(src)
-				if(!component_loop.updaters)
-					component_loop = null
-
-	proc/AddDefaultComponents()
-
-	proc/GetComponentLoop()
-		return component_loop
-
-	proc/Update()
-		if(OnUpdate)
-			OnUpdate()
-
 	proc/Destroy()
 		// Can't Destroy more than once.
 		if(_is_destroyed) return
@@ -89,6 +64,14 @@ AbstractType(Entity)
 
 
 	// ====== Components!
+
+	/*
+
+		Override this in sub-types of Entity to add the components that it
+		should start out with.
+
+	*/
+	proc/AddDefaultComponents()
 
 	proc/GetComponent(ComponentType)
 		return locate(ComponentType) in _components
@@ -128,25 +111,22 @@ AbstractType(Entity)
 	*/
 	proc/AddComponents(Components[])
 		if(!length(Components)) return
-	
+
 		if(!_components)
 			_components = new
 
-		var global
-			update_loop/component_loop
+		var
 			item
 			Component
 				component
 				Starter/starter
-
-		component_loop = GetComponentLoop()
 
 		for(item in Components)
 			component = item
 			component.entity = src
 			component.GetName()
 
-			component.Time = component_loop
+			component.Time = ComponentLoop
 
 			if(!_components[component])
 				_components[component] = TRUE
@@ -216,3 +196,25 @@ AbstractType(Entity)
 
 			component.entity = null
 			component.Time = null
+
+	// === Updating components!
+
+	proc/IsUpdateEnabled()
+		return _is_update_enabled
+
+	proc/SetUpdateEnabled(Value)
+		_is_update_enabled = Value
+		if(Value)
+			if(length(_component_updaters))
+				if(!ComponentLoop)
+					ComponentLoop = new /update_loop ("Update")
+				ComponentLoop.Add(src)
+		else
+			if(ComponentLoop)
+				ComponentLoop.Remove(src)
+				if(!ComponentLoop.updaters)
+					ComponentLoop = null
+
+	proc/Update()
+		if(OnUpdate)
+			OnUpdate()

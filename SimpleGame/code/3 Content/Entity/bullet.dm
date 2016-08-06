@@ -1,4 +1,4 @@
-var object_pool/bullet_pool = new /object_pool (
+var object_pool/BulletPool = new /object_pool (
 	/Entity/bullet, 500, 100)
 
 Component/physics/bullet
@@ -55,13 +55,13 @@ Entity/bullet
 		. = ..()
 		var atom/movable/translate_result/result = .
 		if(!result || result.bump_dir)
-			var Entity/particle/smoke = ObjectPool.Pop(particle_pool)
+			var Entity/particle/smoke = ObjectPool.Pop(ParticlePool)
 			smoke.AddComponent(new /Component/ParticleEffector/smoke)
 			smoke.SetCenter(src)
 			Pool()
 
 	proc/GetObjectPool()
-		return bullet_pool
+		return BulletPool
 
 	proc/Unpooled(object_pool/ObjectPool)
 		SetUpdateEnabled(TRUE)
