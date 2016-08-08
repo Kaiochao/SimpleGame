@@ -1,12 +1,3 @@
-/*
-
-	I'm using an overlay for the player's body so that weapons
-	(whose bodies are added to the entity's underlays)
-	can be transformed by the player, while being unaffected
-	by the player's default appearance.
-
-*/
-
 Entity/player
 	icon = null
 
@@ -15,7 +6,18 @@ Entity/player
 	pixel_x = (24 - 32) / 2
 	pixel_y = (24 - 32) / 2
 
+	/*
+	I'm using an overlay for the player's body so that weapons
+	(whose bodies are added to the entity's underlays)
+	can be transformed (rotated) with the player, while being unaffected
+	by the player's default appearance.
+	*/
 	overlays = list(/obj/player_body)
+
+	/obj/player_body
+		icon_state = "oval"
+		color = "blue"
+		transform = matrix(24/32, 0, 0, 0, 24/32, 0)
 
 	var client/_client
 
@@ -50,8 +52,3 @@ Entity/player
 		)
 
 		physics.translate_flags = TranslateFlags.EnableSliding
-
-obj/player_body
-	icon_state = "oval"
-	color = "blue"
-	transform = matrix(24/32, 0, 0, 0, 24/32, 0)

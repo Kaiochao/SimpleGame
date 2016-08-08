@@ -1,7 +1,7 @@
 AbstractType(Component/Weapon/Gun)
 	var
-		fire_button = Macro.MouseLeftButton
-		gamepad_fire_button = Macro.GamepadR2
+		fire_button = MouseButton.Left
+		gamepad_fire_button = GamepadButton.R2
 
 		muzzle_speed = 1600
 		body_length = 32
@@ -25,14 +25,16 @@ AbstractType(Component/Weapon/Gun)
 		var InputHandler/input_handler = GetWrappedValue(
 			/Component/Wrapper/InputHandler)
 		if(input_handler)
-			EVENT_ADD(input_handler.OnButton, src, .proc/HandleButton)
+			EVENT_ADD(input_handler.ButtonPressed, src,
+				.proc/HandleButtonPressed)
 
 	Destroy()
 		..()
 		var InputHandler/input_handler = GetWrappedValue(
 			/Component/Wrapper/InputHandler)
 		if(input_handler)
-			EVENT_REMOVE(input_handler.OnButton, src, .proc/HandleButton)
+			EVENT_REMOVE(input_handler.ButtonPressed, src,
+				.proc/HandleButtonPressed)
 
 	proc/CanShoot()
 		if(shot_cooldown && shot_cooldown.IsCoolingDown())
@@ -52,13 +54,11 @@ AbstractType(Component/Weapon/Gun)
 		var InputHandler/input_handler = GetWrappedValue(
 			/Component/Wrapper/InputHandler)
 		if(input_handler)
-			return input_handler.GetButtonState(fire_button) \
-				|| input_handler.GetButtonState(gamepad_fire_button)
+			return input_handler.IsButtonPressed(fire_button) \
+				|| input_handler.IsButtonPressed(gamepad_fire_button)
 
-	proc/HandleButton(
-		InputHandler/InputHandler, Macro/Macro, ButtonState/ButtonState)
-		if(ButtonState == ButtonState.Pressed \
-			&& (Macro == fire_button || Macro == gamepad_fire_button))
+	proc/HandleButtonPressed(InputHandler/InputHandler, Button)
+		if(Button == fire_button || Button == gamepad_fire_button)
 			_fire_button_downed = TRUE
 
 	proc/Shoot()
@@ -82,7 +82,7 @@ AbstractType(Component/Weapon/Gun)
 		bullet_physics.SetVelocity(muzzle_velocity)
 
 		bullet.transform = initial(bullet.transform) \
-			* Math.RotationMatrix(muzzle_velocity.GetNormalized())
+			* Math.DirectionToRotation(muzzle_velocity.GetNormalized())
 
 		bullet.SetCenter(entity)
 		bullet.Translate(to_muzzle)
@@ -116,14 +116,20 @@ AbstractType(Component/Weapon/Gun)
 			return direction.Turn(
 				pick(1, -1) * inaccuracy * (2 * rand() - 1) ** 2)
 
+		GetOwnName()
+			return "inaccurate automatic gun"
+
 		spread
 			inaccuracy = 10
 			shot_cooldown = new (5)
 			body_length = 35
 
 			var
-				spread_count = 10
+				spread_count = 6
 				velocity_max_scale = 0.3
+
+			GetOwnName()
+				return "spread shot gun"
 
 			Shoot()
 				var

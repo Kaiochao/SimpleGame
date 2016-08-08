@@ -5,32 +5,32 @@ AbstractType(Entity)
 
 	var tmp
 		/*
-			Set of components added to this entity.
+		Set of components added to this entity.
 		*/
 		_components[]
 
 		/*
-			Subset of components; components with an Update callback.
+		Subset of components; components with an Update callback.
 		*/
-		_component_updaters[]
+		_updatable_components[]
 
 		/*
-			Subset of components; components with a Destroy callback.
+		Subset of components; components with a Destroy callback.
 		*/
-		_component_destroyers[]
+		_destroyable_components[]
 
 		/*
-			Prevents multiple destruction of the same entity.
+		Prevents multiple destruction of the same entity.
 		*/
 		_is_destroyed
 
 		/*
-			Property for IsUpdating() and SetUpdateEnabled(Value)
+		Property for IsUpdating() and SetUpdateEnabled(Value)
 		*/
 		_is_update_enabled
 
-	EVENT(OnUpdate)
-	EVENT(OnDestroy)
+	EVENT(Updated, Entity/Entity)
+	EVENT(Destroyed, Entity/Entity)
 
 	New()
 		..()
@@ -43,61 +43,68 @@ AbstractType(Entity)
 		SetUpdateEnabled(FALSE)
 		..()
 
-	proc/Destroy()
-		// Can't Destroy more than once.
-		if(_is_destroyed) return
+	proc
+		Destroy()
+			// Can't Destroy more than once.
+			if(_is_destroyed) return
 
-		// Stop updating.
-		SetUpdateEnabled(FALSE)
+			// Stop updating.
+			SetUpdateEnabled(FALSE)
 
-		// Remove all components.
-		RemoveComponents(_components)
+			// Remove all components.
+			RemoveComponents(_components)
 
-		// Fire event.
-		if(OnDestroy)
-			OnDestroy()
+			// Destroy destroyable components and fire destruction event.
+			DestroyAllComponents()
+			Destroyed()
 
-		SetLocation()
+			SetLocation()
 
-		// Prevent excess destruction.
-		_is_destroyed = TRUE
+			// Prevent excess destruction.
+			_is_destroyed = TRUE
 
+		DestroyAllComponents()
+			if(length(_destroyable_components))
+				var item, Component/Destroyable/destroyable
+				for(item in _destroyable_components)
+					destroyable = item
+					destroyable.Destroy()
 
-	// ====== Components!
+		// ====== Components!
 
-	/*
+		/* Called when this Entity is initialized. Meant for overriding.
 
 		Override this in sub-types of Entity to add the components that it
 		should start out with.
 
-	*/
-	proc/AddDefaultComponents()
+		*/
+		AddDefaultComponents()
 
-	proc/GetComponent(ComponentType)
-		return locate(ComponentType) in _components
+		/* Returns a component of type ComponentType added to this Entity.
+		*/
+		GetComponent(ComponentType)
+			return locate(ComponentType) in _components
 
-	/*
+		/* Add a single component to this Entity.
 
-		Add a single component to this Entity.
-		* If Component has Start defined, it will be called after being added.
-		* If Component has Update defined, it will be called every update as
+		If Component has Start defined, it will be called after being added.
+
+		If Component has Update defined, it will be called every update as
 		long as Entity.IsUpdateEnabled() is TRUE.
 
-	*/
-	proc/AddComponent(Component/Component)
-		AddComponents(list(Component))
+		*/
+		AddComponent(Component/Component)
+			AddComponents(list(Component))
 
-	/*
+		/* Remove a single component from this Entity.
 
+		If Component has Destroy defined, it is called before being removed.
 
+		*/
+		RemoveComponent(Component/Component)
+			RemoveComponents(list(Component))
 
-	*/
-	proc/RemoveComponent(Component/Component)
-		RemoveComponents(list(Component))
-
-	/*
-
-		Add a bunch of components at once.
+		/* Add a bunch of components at once.
 
 		This is preferred to adding components separately with AddComponent().
 		Component.Start() is called AFTER everything is added, which allows for
@@ -108,113 +115,122 @@ AbstractType(Entity)
 
 		(But X.Start() may not have been called yet.)
 
-	*/
-	proc/AddComponents(Components[])
-		if(!length(Components)) return
+		*/
+		AddComponents(Components[])
+			if(!length(Components)) return
 
-		if(!_components)
-			_components = new
+			if(!_components)
+				_components = new
 
-		var
-			item
-			Component
-				component
-				Starter/starter
+			var
+				item
+				Component
+					component
+					Startable/startable
 
-		for(item in Components)
-			component = item
-			component.entity = src
-			component.GetName()
+			for(item in Components)
+				component = item
+				component.entity = src
+				component.GetName()
 
-			component.Time = ComponentLoop
+				component.Time = ComponentLoop
 
-			if(!_components[component])
-				_components[component] = TRUE
+				if(!_components[component])
+					_components[component] = TRUE
 
-			if(hascall(component, "Update"))
-				if(!_component_updaters)
-					_component_updaters = new
-				_component_updaters[component] = TRUE
-				EVENT_ADD(OnUpdate, component, "Update")
+				if(hascall(component, "Update"))
+					if(!_updatable_components)
+						_updatable_components = new
+					_updatable_components[component] = TRUE
+					_CheckUpdates()
 
-				SetUpdateEnabled(IsUpdateEnabled())
+				if(hascall(component, "Destroy"))
+					if(!_destroyable_components)
+						_destroyable_components = new
+					_destroyable_components[component] = TRUE
 
-			if(hascall(component, "Destroy"))
-				if(!_component_destroyers)
-					_component_destroyers = new
-				_component_destroyers[component] = TRUE
-				EVENT_ADD(OnDestroy, component, "Destroy")
+			for(item in Components)
+				if(hascall(item, "Start"))
+					startable = item
+					startable.Start(src)
 
-		for(item in Components)
-			if(hascall(item, "Start"))
-				starter = item
-				starter.Start(src)
+		/* Remove a bunch of components at once.
 
-	/*
+		Similar to AddComponents(), this calls all Component.Destroy()'s
+		(if any) BEFORE anything is actually removed.
 
-		Remove a bunch of components at once.
+		*/
+		RemoveComponents(Components[])
+			if(!length(Components)) return
 
-		Similar to AddComponents(), this calls Component.Destroy()
-		BEFORE anything is actually removed.
+			var
+				item
+				Component
+					component
+					Destroyable/destroyable
 
-	*/
-	proc/RemoveComponents(Components[])
-		if(!length(Components)) return
+			for(item in Components)
+				// This line not only calls Destroy only if the call exists;
+				// it also prevents multiple calls to Destroy.
+				if(_destroyable_components && _destroyable_components[item])
+					destroyable = item
+					_destroyable_components -= destroyable
+					if(!length(_destroyable_components))
+						_destroyable_components = null
+					destroyable.Destroy()
 
-		var global
-			item
-			Component
-				component
-				Destroyer/destroyer
+			for(item in Components)
+				component = item
 
-		for(item in Components)
-			if(_component_destroyers && _component_destroyers[item])
-				destroyer = item
+				_components -= component
+				if(!length(_components))
+					_components = null
 
-				_component_destroyers -= destroyer
-				if(!length(_component_destroyers))
-					_component_destroyers = null
+				if(_updatable_components && _updatable_components[component])
+					_updatable_components -= component
+					if(!length(_updatable_components))
+						_updatable_components = null
+					_CheckUpdates()
 
-				EVENT_REMOVE(OnDestroy, destroyer, "Destroy")
+				component.entity = null
+				component.Time = null
 
-				destroyer.Destroy()
+		// === Updating components!
 
-		for(item in Components)
-			component = item
+		/* Is this Entity enabled for updates?
 
-			_components -= component
-			if(!length(_components))
-				_components = null
+		If so, and the Entity has an updatable component, then
+		Entity.UpdateComponents() is called every tick of the ComponentLoop,
+		which calls Component.Update() for all components that have it.
+		*/
+		IsUpdateEnabled()
+			return _is_update_enabled
 
-			if(_component_updaters && _component_updaters[component])
-				_component_updaters -= component
-				if(!length(_component_updaters))
-					_component_updaters = null
-				EVENT_REMOVE(OnUpdate, component, "Update")
+		/* Enable or disable this Entity for updates.
+		*/
+		SetUpdateEnabled(Value)
+			_is_update_enabled = Value
+			_CheckUpdates()
 
-				SetUpdateEnabled(IsUpdateEnabled())
+		/* Add or remove this Entity from the ComponentLoop when appropriate.
+		*/
+		_CheckUpdates()
+			if(IsUpdateEnabled())
+				if(length(_updatable_components))
+					if(!ComponentLoop)
+						ComponentLoop = new /update_loop ("UpdateComponents")
+					ComponentLoop.Add(src)
+			else
+				if(ComponentLoop)
+					ComponentLoop.Remove(src)
+					if(!ComponentLoop.updaters)
+						ComponentLoop = null
 
-			component.entity = null
-			component.Time = null
-
-	// === Updating components!
-
-	proc/IsUpdateEnabled()
-		return _is_update_enabled
-
-	proc/SetUpdateEnabled(Value)
-		_is_update_enabled = Value
-		if(Value)
-			if(length(_component_updaters))
-				if(!ComponentLoop)
-					ComponentLoop = new /update_loop ("Update")
-				ComponentLoop.Add(src)
-		else
-			if(ComponentLoop)
-				ComponentLoop.Remove(src)
-				if(!ComponentLoop.updaters)
-					ComponentLoop = null
-
-	proc/Update()
-		if(OnUpdate)
-			OnUpdate()
+		/* Called periodically when this Entity has an updatable component.
+		*/
+		UpdateComponents()
+			var item, Component/Updatable/updatable
+			for(item in _updatable_components)
+				updatable = item
+				updatable.Update()
+			Updated()

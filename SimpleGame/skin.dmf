@@ -1,0 +1,59 @@
+macro "macro"
+
+
+window "default"
+	elem "default"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = none
+		anchor2 = none
+		background-color = none
+		is-default = true
+		saved-params = "pos;size;is-minimized;is-maximized"
+		statusbar = false
+		can-resize = false
+		macro = "macro"
+	elem "map"
+		type = MAP
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		text-color = none
+		is-default = true
+		drop-zone = true
+		right-click = true
+		saved-params = "icon-size"
+		icon-size = 32
+		letterbox = false
+		zoom = 1
+
+window "info"
+	elem "info"
+		type = MAIN
+		pos = 281,0
+		size = 400x400
+		anchor1 = none
+		anchor2 = none
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Info"
+		statusbar = false
+		can-close = false
+		macro = "macro"
+	elem "info"
+		type = INFO
+		pos = 0,0
+		size = 400x400
+		anchor1 = 0,0
+		anchor2 = 100,100
+		font-family = "Inconsolata-dz"
+		text-color = #c0c0c0
+		background-color = #000000
+		is-default = true
+		drop-zone = true
+		saved-params = ""
+		tab-text-color = #c0c0c0
+		tab-background-color = #000000
+		tab-font-family = "Inconsolata-dz"
+

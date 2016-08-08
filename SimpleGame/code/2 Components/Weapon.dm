@@ -39,5 +39,5 @@ AbstractType(Component/Weapon)
 					time = world.tick_lag,
 					easing = SINE_EASING,
 					flags = ANIMATION_END_NOW,
-					transform = initial(entity.transform) * Math.RotationMatrix(aim)
+					transform = initial(entity.transform) * Math.DirectionToRotation(aim)
 				)

@@ -17,8 +17,6 @@
 #define TILE_WIDTH SHAPE_WIDTH
 #define TILE_HEIGHT SHAPE_HEIGHT
 
-#define NO_MACRO_OVERWRITE
-
 #define TRUE 1
 #define FALSE 0
 
@@ -34,6 +32,7 @@
 #include "code\0 TypeModifiers\InterfaceType.dm"
 #include "code\0 TypeModifiers\SealedType.dm"
 #include "code\0 TypeModifiers\StaticType.dm"
+#include "code\1 Utilities\Component.dm"
 #include "code\1 Utilities\cooldown.dm"
 #include "code\1 Utilities\Debug.dm"
 #include "code\1 Utilities\Entity.dm"
@@ -45,7 +44,6 @@
 #include "code\1 Utilities\update loop.dm"
 #include "code\1 Utilities\vector2.dm"
 #include "code\2 Components\Camera.dm"
-#include "code\2 Components\Component.dm"
 #include "code\2 Components\Gun.dm"
 #include "code\2 Components\physics.dm"
 #include "code\2 Components\Weapon.dm"

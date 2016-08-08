@@ -9,7 +9,7 @@ Math
 		Hypot(X, Y)
 			return (X || Y) ? sqrt(X * X + Y * Y) : 0
 
-		RotationMatrix(vector2/Vector, InitialDirection = Directions.North)
+		DirectionToRotation(vector2/Vector, InitialDirection = Directions.North)
 			var vector2/unit = Vector, unit_x, unit_y
 
 			if(Vector.GetSquareMagnitude() != 1)

@@ -1,35 +1,33 @@
 Component/WeaponHandler/player
 	var
-		gamepad_next_weapon = Macro.GamepadR1
-		gamepad_previous_weapon = Macro.GamepadL1
+		gamepad_next_weapon = GamepadButton.R1
+		gamepad_previous_weapon = GamepadButton.L1
 
 	proc/Start()
 		var InputHandler/input_handler = GetWrappedValue(
 			/Component/Wrapper/InputHandler)
-		EVENT_ADD(input_handler.OnMouseWheel, src, .proc/HandleMouseWheel)
-		EVENT_ADD(input_handler.OnButton, src, .proc/HandleButton)
+		EVENT_ADD(input_handler.MouseScrolled, src,
+			.proc/HandleMouseScrolled)
+		EVENT_ADD(input_handler.ButtonPressed, src,
+			.proc/HandleButtonPressed)
 
 	proc/Destroy()
 		var InputHandler/input_handler = GetWrappedValue(
 			/Component/Wrapper/InputHandler)
-		EVENT_REMOVE_OBJECT(input_handler.OnMouseWheel, src)
-		EVENT_REMOVE_OBJECT(input_handler.OnButton, src)
+		EVENT_REMOVE_OBJECT(input_handler.MouseScrolled, src)
+		EVENT_REMOVE_OBJECT(input_handler.ButtonPressed, src)
 
-	proc/HandleMouseWheel(InputHandler/InputHandler, DeltaX, DeltaY)
+	proc/HandleMouseScrolled(InputHandler/InputHandler, DeltaX, DeltaY)
 		if(DeltaY > 0)
 			EquipNextWeapon()
-		else
+		else if(DeltaY < 0)
 			EquipPreviousWeapon()
 
-	proc/HandleButton(
-		InputHandler/InputHandler,
-		Macro/Macro,
-		ButtonState/ButtonState)
-		if(ButtonState)
-			if(Macro == gamepad_next_weapon)
-				EquipNextWeapon()
-			else if(Macro == gamepad_previous_weapon)
-				EquipPreviousWeapon()
+	proc/HandleButtonPressed(InputHandler/InputHandler, Button)
+		if(Button == gamepad_next_weapon)
+			EquipNextWeapon()
+		else if(Button == gamepad_previous_weapon)
+			EquipPreviousWeapon()
 
 	proc/EquipNextWeapon()
 		var Component/Weapon/weapons[] = GetWeapons()
