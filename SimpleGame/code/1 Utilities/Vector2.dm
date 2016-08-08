@@ -147,7 +147,7 @@ vector2
 			return _x * V._x + _y * V._y
 
 		ToString()
-			return "Vector2([_x], [_y])"
+			return "vector2([_x], [_y])"
 
 		ToText()
 			return ToString()

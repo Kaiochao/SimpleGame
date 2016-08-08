@@ -35,9 +35,9 @@ mob/lobby
 		stat("world.cpu", "[world.cpu]%")
 
 		stat("Updating Entities",
-			"[ComponentLoop && length(ComponentLoop.updaters)]")
+			"[ComponentUpdateLoop && length(ComponentUpdateLoop.updaters)]")
 		updaters_list_stat.SetText(
-			jointext_short(ComponentLoop.updaters, ", \n"))
+			jointext_short(ComponentUpdateLoop.updaters, ", \n"))
 		stat(updaters_list_stat)
 
 		stat("Physics Updaters",

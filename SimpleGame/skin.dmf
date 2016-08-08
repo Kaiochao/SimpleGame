@@ -1,4 +1,10 @@
 macro "macro"
+	elem 
+		name = "Escape"
+	elem 
+		name = "F1"
+	elem 
+		name = "F3+UP"
 
 
 window "default"
@@ -8,7 +14,6 @@ window "default"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
-		background-color = none
 		is-default = true
 		saved-params = "pos;size;is-minimized;is-maximized"
 		statusbar = false
@@ -33,9 +38,10 @@ window "info"
 	elem "info"
 		type = MAIN
 		pos = 281,0
-		size = 400x400
+		size = 640x480
 		anchor1 = none
 		anchor2 = none
+		background-color = none
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Info"
 		statusbar = false
@@ -44,7 +50,7 @@ window "info"
 	elem "info"
 		type = INFO
 		pos = 0,0
-		size = 400x400
+		size = 640x480
 		anchor1 = 0,0
 		anchor2 = 100,100
 		font-family = "Inconsolata-dz"

@@ -27,7 +27,7 @@ AbstractType(Component)
 		return name
 
 	/* For overriding when using the default GetName() behavior.
-	Defaults to the part of "[type]" after the final slash. 
+	Defaults to the part of "[type]" after the final slash.
 	*/
 	proc/GetOwnName()
 		if(isnull(_own_name))
@@ -38,26 +38,45 @@ AbstractType(Component)
 	proc/GetComponent(ComponentType)
 		return entity.GetComponent(ComponentType)
 
-	/*
-	Optional callbacks:
-	(They're only called if they're defined)
-
-	Start()
-	Update()
-	Destroy()
+	/* Optional callbacks, which are only called if they're defined.
 	*/
-
-	Updatable
-		parent_type = /Interface
-
-		proc/Update()
 
 	Startable
 		parent_type = /Interface
+		proc
+			/* Called after the component is added.
 
-		proc/Start()
+			If AddComponents() is used, this not called until all of the
+			components have been added.
+
+			This may be used to get references to other components that have
+			already been added.
+			*/
+			Start()
+
+	Updatable
+		parent_type = /Interface
+		proc
+			/* Called every frame.
+			*/
+			Update()
+
+	LateUpdatable
+		parent_type = /Interface
+		proc
+			/* Called every frame after all Update calls.
+			*/
+			LateUpdate()
 
 	Destroyable
 		parent_type = /Interface
+		proc
+			/* Called before the component is removed.
 
-		proc/Destroy()
+			If RemoveComponents() is used, this is called before any components
+			have been removed.
+
+			This should be defined to clear references to objects to allow
+			garbage collection.
+			*/
+			Destroy()

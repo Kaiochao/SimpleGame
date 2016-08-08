@@ -6,8 +6,6 @@ update_loop
 		last_update_time[]
 		delta_time
 
-		to_update[]
-
 	proc
 		Add(Updater)
 			if(!updaters)
@@ -48,10 +46,8 @@ update_loop
 			sleep world.tick_lag
 
 	proc/UpdateUpdaters()
-		to_update = updaters.Copy()
-		for(var/item in to_update)
+		for(var/item in updaters)
 			Update(item)
-		to_update = null
 
 	proc/Update(Updater)
 		var time = world.time

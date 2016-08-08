@@ -28,6 +28,8 @@ Math
 			return A * (1 - T) + B * T
 
 		Dampen(A, B, T, DeltaTime)
+			if(T == 1#INF)
+				return B
 			return Interpolate(A, B, 1 - E ** (-T * DeltaTime))
 
 		Ceil(N)

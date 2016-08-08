@@ -3,7 +3,7 @@ Component/MovementHandler/player
 		walk_speed = 80
 		run_speed = 160
 
-		move_analog = GamepadAxis.Left
+		move_axis = GamepadAxis.Left
 		move_right = KeyButton.D
 		move_left = KeyButton.A
 		move_up = KeyButton.W
@@ -13,8 +13,8 @@ Component/MovementHandler/player
 		gamepad_speed_button = GamepadButton.L3
 
 		tmp
-			vector2
-				velocity
+			vector2/velocity
+			InputHandler/_input_handler
 
 	GetVelocity()
 		return velocity || ..()
@@ -22,13 +22,19 @@ Component/MovementHandler/player
 	GetOwnName()
 		return "player movement handler"
 
+	Start()
+		..()
+		_input_handler = GetWrappedValue(/Component/Wrapper/InputHandler)
+
+	Destroy()
+		..()
+		_input_handler = null
+
 	Update()
 		var
 			speed
 			input_x
 			input_y
-			InputHandler/input_handler = entity.GetWrappedValue(
-				/Component/Wrapper/InputHandler)
 
 		speed = IsRunning() ? run_speed : walk_speed
 
@@ -36,20 +42,21 @@ Component/MovementHandler/player
 			velocity = null
 
 		else
-			var vector2/move_analog_input = vector2.FromList(
-				input_handler.GetAxisValues(move_analog))
-			if(move_analog_input.IsZero())
-				input_x = input_handler.IsButtonPressed(move_right) \
-						- input_handler.IsButtonPressed(move_left)
-				input_y = input_handler.IsButtonPressed(move_up) \
-						- input_handler.IsButtonPressed(move_down)
+			var vector2/move_axis_input = vector2.FromList(
+				_input_handler.GetAxisValues(move_axis))
+
+			if(move_axis_input.IsZero())
+				input_x = _input_handler.IsButtonPressed(move_right) \
+						- _input_handler.IsButtonPressed(move_left)
+				input_y = _input_handler.IsButtonPressed(move_up) \
+						- _input_handler.IsButtonPressed(move_down)
 				if(input_x && input_y)
 					var magnitude = Math.Hypot(input_x, input_y)
 					input_x /= magnitude
 					input_y /= magnitude
 			else
-				input_x = move_analog_input.GetX()
-				input_y = move_analog_input.GetY()
+				input_x = move_axis_input.GetX()
+				input_y = move_axis_input.GetY()
 
 			if(input_x || input_y)
 				velocity = new (input_x * speed, input_y * speed)
@@ -60,7 +67,7 @@ Component/MovementHandler/player
 
 	proc
 		IsRunning()
-			var InputHandler/input_handler = entity.GetWrappedValue(
-				/Component/Wrapper/InputHandler)
-			return !(input_handler.IsButtonPressed(speed_button) \
-				|| input_handler.IsButtonPressed(gamepad_speed_button))
+			return !(
+				   _input_handler.IsButtonPressed(speed_button) \
+				|| _input_handler.IsButtonPressed(gamepad_speed_button)
+				)

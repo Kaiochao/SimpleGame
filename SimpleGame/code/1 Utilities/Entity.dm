@@ -1,35 +1,45 @@
-var update_loop/ComponentLoop
+var update_loop/component/ComponentUpdateLoop
+
+update_loop/component
+	UpdateUpdaters()
+		var item, Entity/entity
+		for(item in updaters)
+			entity = item
+			entity.UpdateComponents()
+		for(item in updaters)
+			entity = item
+			entity.LateUpdateComponents()
 
 AbstractType(Entity)
 	parent_type = /obj
 
 	var tmp
-		/*
-		Set of components added to this entity.
+		/* Set of components added to this entity.
 		*/
 		_components[]
 
-		/*
-		Subset of components; components with an Update callback.
+		/* Subset of components: components with Update defined.
 		*/
 		_updatable_components[]
 
-		/*
-		Subset of components; components with a Destroy callback.
+		/* Subset of components: components with LateUpdate defined.
+		*/
+		_late_updatable_components[]
+
+		/* Subset of components: components with Destroy defined.
 		*/
 		_destroyable_components[]
 
-		/*
-		Prevents multiple destruction of the same entity.
+		/* Prevents multiple destruction of the same entity.
 		*/
 		_is_destroyed
 
-		/*
-		Property for IsUpdating() and SetUpdateEnabled(Value)
+		/* Property for IsUpdating() and SetUpdateEnabled(Value)
 		*/
 		_is_update_enabled
 
 	EVENT(Updated, Entity/Entity)
+	EVENT(LateUpdated, Entity/Entity)
 	EVENT(Destroyed, Entity/Entity)
 
 	New()
@@ -63,14 +73,14 @@ AbstractType(Entity)
 			// Prevent excess destruction.
 			_is_destroyed = TRUE
 
+		// ====== Components!
+
 		DestroyAllComponents()
 			if(length(_destroyable_components))
 				var item, Component/Destroyable/destroyable
 				for(item in _destroyable_components)
 					destroyable = item
 					destroyable.Destroy()
-
-		// ====== Components!
 
 		/* Called when this Entity is initialized. Meant for overriding.
 
@@ -133,7 +143,7 @@ AbstractType(Entity)
 				component.entity = src
 				component.GetName()
 
-				component.Time = ComponentLoop
+				component.Time = ComponentUpdateLoop
 
 				if(!_components[component])
 					_components[component] = TRUE
@@ -142,7 +152,11 @@ AbstractType(Entity)
 					if(!_updatable_components)
 						_updatable_components = new
 					_updatable_components[component] = TRUE
-					_CheckUpdates()
+
+				if(hascall(component, "LateUpdate"))
+					if(!_late_updatable_components)
+						_late_updatable_components = new
+					_late_updatable_components[component] = TRUE
 
 				if(hascall(component, "Destroy"))
 					if(!_destroyable_components)
@@ -153,6 +167,8 @@ AbstractType(Entity)
 				if(hascall(item, "Start"))
 					startable = item
 					startable.Start(src)
+
+			_CheckUpdates()
 
 		/* Remove a bunch of components at once.
 
@@ -190,17 +206,24 @@ AbstractType(Entity)
 					_updatable_components -= component
 					if(!length(_updatable_components))
 						_updatable_components = null
-					_CheckUpdates()
+
+				if(_late_updatable_components \
+					&& _late_updatable_components[component])
+					_late_updatable_components -= component
+					if(!length(_late_updatable_components))
+						_late_updatable_components = null
 
 				component.entity = null
 				component.Time = null
+
+			_CheckUpdates()
 
 		// === Updating components!
 
 		/* Is this Entity enabled for updates?
 
 		If so, and the Entity has an updatable component, then
-		Entity.UpdateComponents() is called every tick of the ComponentLoop,
+		Entity.UpdateComponents() is called every tick of the ComponentUpdateLoop,
 		which calls Component.Update() for all components that have it.
 		*/
 		IsUpdateEnabled()
@@ -212,25 +235,39 @@ AbstractType(Entity)
 			_is_update_enabled = Value
 			_CheckUpdates()
 
-		/* Add or remove this Entity from the ComponentLoop when appropriate.
+		/* Add or remove this Entity from the ComponentUpdateLoop when appropriate.
 		*/
 		_CheckUpdates()
 			if(IsUpdateEnabled())
-				if(length(_updatable_components))
-					if(!ComponentLoop)
-						ComponentLoop = new /update_loop ("UpdateComponents")
-					ComponentLoop.Add(src)
+				if(length(_updatable_components) \
+				|| length(_late_updatable_components))
+					if(!ComponentUpdateLoop)
+						ComponentUpdateLoop = new /update_loop/component
+					ComponentUpdateLoop.Add(src)
 			else
-				if(ComponentLoop)
-					ComponentLoop.Remove(src)
-					if(!ComponentLoop.updaters)
-						ComponentLoop = null
+				if(ComponentUpdateLoop)
+					ComponentUpdateLoop.Remove(src)
+					if(!ComponentUpdateLoop.updaters)
+						ComponentUpdateLoop = null
 
 		/* Called periodically when this Entity has an updatable component.
 		*/
 		UpdateComponents()
 			var item, Component/Updatable/updatable
+
 			for(item in _updatable_components)
 				updatable = item
 				updatable.Update()
+
 			Updated()
+
+		/* Called periodically, but not before any UpdateComponents() calls. 
+		*/
+		LateUpdateComponents()
+			var item, Component/LateUpdatable/late_updatable
+
+			for(item in _late_updatable_components)
+				late_updatable = item
+				late_updatable.LateUpdate()
+
+			LateUpdated()
