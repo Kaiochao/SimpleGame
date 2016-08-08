@@ -30,7 +30,7 @@ Entity/player
 	AddDefaultComponents()
 		var Component
 			Wrapper
-				Client/client_wrapper = new
+				client/client_wrapper = new
 				InputHandler/input_handler_wrapper = new
 			WeaponHandler/weapon_handler = new /Component/WeaponHandler/player
 			physics/physics = new
@@ -45,7 +45,7 @@ Entity/player
 				physics,
 				weapon_handler
 			) + newlist(
-				/Component/Camera,
+				/Component/camera,
 				/Component/MovementHandler/player,
 				/Component/AimingHandler/player
 			)

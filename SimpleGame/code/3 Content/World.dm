@@ -2,7 +2,7 @@ world
 	name = "Shooter"
 
 	fps = 20
-	view = 12
+	view = 7
 	mob = /mob/lobby
 
 	maxx = 50

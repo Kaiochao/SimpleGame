@@ -11,9 +11,10 @@ window "default"
 	elem "default"
 		type = MAIN
 		pos = 281,0
-		size = 640x480
+		size = 480x480
 		anchor1 = none
 		anchor2 = none
+		background-color = none
 		is-default = true
 		saved-params = "pos;size;is-minimized;is-maximized"
 		statusbar = false
@@ -22,7 +23,7 @@ window "default"
 	elem "map"
 		type = MAP
 		pos = 0,0
-		size = 640x480
+		size = 480x480
 		anchor1 = 0,0
 		anchor2 = 100,100
 		text-color = none
@@ -41,7 +42,6 @@ window "info"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
-		background-color = none
 		saved-params = "pos;size;is-minimized;is-maximized"
 		title = "Info"
 		statusbar = false

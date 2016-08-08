@@ -1,4 +1,4 @@
-Component/Camera
+Component/camera
 	var
 		// Target position
 		x = 0
@@ -10,9 +10,6 @@ Component/Camera
 		// If the camera is this many pixels away from the entity,
 		// jump to the entity instead of moving gradually.
 		jump_threshold = 100
-
-	// testing
-	// speed = 10
 
 	var tmp
 		client/_client
@@ -32,7 +29,7 @@ Component/Camera
 				_client = Client
 
 		Start()
-			SetClient(entity.GetWrappedValue(/Component/Wrapper/Client))
+			SetClient(entity.GetWrappedValue(/Component/Wrapper/client))
 
 		Destroy()
 			if(_client)

@@ -77,10 +77,9 @@ obj/gun_body
 	shotgun
 		transform = matrix(5/32, 0, 0, 0, 20/32, 20)
 
-/*
-	Return a shortened form of a potentially long list.
-	The result is a comma-separated sequence of no more than 6 entries,
-	always including the first and last 3 items.
+/* Return a shortened form of a potentially long list.
+The result is a comma-separated sequence of no more than 6 entries,
+always including the first and last 3 items.
 */
 proc/jointext_short(List[], Separator = ", ", EndCount = 3)
 	var length = length(List)
@@ -101,15 +100,20 @@ obj/stat_toggle
 		_is_showing
 		_text
 
-	proc/IsShowing() return _is_showing
-	proc/SetShowing(Value)
-		_is_showing = Value
-		name = Value ? _text || " " : "(show)"
+	proc
+		IsShowing()
+			return _is_showing
 
-	proc/GetText() return _text
-	proc/SetText(Value)
-		_text = "[Value]"
-		SetShowing(IsShowing())
+		SetShowing(Value)
+			_is_showing = Value
+			name = Value ? _text || " " : "(show)"
+
+		GetText()
+			return _text
+
+		SetText(Value)
+			_text = "[Value]"
+			SetShowing(IsShowing())
 
 	New(Text = "", IsShowing = FALSE)
 		SetText(Text)

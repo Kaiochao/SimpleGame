@@ -13,6 +13,8 @@
 #define DEBUG
 // END_PREFERENCES
 
+#include "code\1 Utilities\Debug.dm"
+
 #include <kaiochao\Shapes\Shapes.dme>
 #define TILE_WIDTH SHAPE_WIDTH
 #define TILE_HEIGHT SHAPE_HEIGHT
@@ -53,14 +55,14 @@
 #include "code\2 Components\MovementHandler\player.dm"
 #include "code\2 Components\WeaponHandler\player.dm"
 #include "code\2 Components\WeaponHandler\WeaponHandler.dm"
-#include "code\2 Components\Wrapper\ClientWrapper.dm"
-#include "code\2 Components\Wrapper\InputHandlerWrapper.dm"
+#include "code\2 Components\Wrapper\client.dm"
+#include "code\2 Components\Wrapper\InputHandler.dm"
 #include "code\2 Components\Wrapper\Wrapper.dm"
 #include "code\3 Content\client.dm"
 #include "code\3 Content\lobby.dm"
 #include "code\3 Content\World.dm"
 #include "code\3 Content\Entity\bullet.dm"
 #include "code\3 Content\Entity\player.dm"
-#include "code\3 Content\Particle\particle.dm"
-#include "code\3 Content\Particle\ParticleEffector.dm"
+#include "code\3 Content\Entity\Particle\particle.dm"
+#include "code\3 Content\Entity\Particle\ParticleEffector.dm"
 // END_INCLUDE

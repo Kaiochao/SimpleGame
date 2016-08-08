@@ -33,7 +33,7 @@ Component/AimingHandler/player
 
 	proc
 		Start()
-			_client = GetWrappedValue(/Component/Wrapper/Client)
+			_client = GetWrappedValue(/Component/Wrapper/client)
 			_input_handler = GetWrappedValue(/Component/Wrapper/InputHandler)
 			EVENT_ADD(_input_handler.MouseMoved, src, .proc/HandleMouseMoved)
 
@@ -115,7 +115,7 @@ Component/AimingHandler/player
 			if(_has_axis_input || _mouse_moved)
 				_direction = _aim_input.GetNormalized()
 
-			var Component/Camera/camera = GetComponent(/Component/Camera)
+			var Component/camera/camera = GetComponent(/Component/camera)
 			if(camera)
 				var
 					camera_x = 0

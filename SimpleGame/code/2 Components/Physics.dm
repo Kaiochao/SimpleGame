@@ -15,7 +15,8 @@ Component/physics
 		vector2/velocity
 		TranslateFlags/translate_flags = 0
 
-	var tmp/_is_physics_enabled = FALSE
+	var tmp
+		_is_physics_enabled = FALSE
 
 	New()
 		..()
@@ -24,34 +25,36 @@ Component/physics
 	/* Set velocity.
 		See: PhysicsUpdate()
 	*/
-	proc/SetVelocity(vector2/Velocity)
-		if(velocity == Velocity || Velocity && Velocity.Equals(velocity))
-			return
+	proc
+		SetVelocity(vector2/Velocity)
+			if(velocity == Velocity || Velocity && Velocity.Equals(velocity))
+				return
 
-		if(Velocity && !Velocity.IsZero())
-			velocity = Velocity.Copy()
-			if(_is_physics_enabled) return
-			_is_physics_enabled = TRUE
-			PhysicsLoop.Add(src)
+			if(Velocity && !Velocity.IsZero())
+				velocity = Velocity.Copy()
+				if(_is_physics_enabled) return
+				_is_physics_enabled = TRUE
+				PhysicsLoop.Add(src)
 
-		else
-			velocity = null
-			if(_is_physics_enabled)
-				_is_physics_enabled = FALSE
-				PhysicsLoop.Remove(src)
+			else
+				velocity = null
+				if(_is_physics_enabled)
+					_is_physics_enabled = FALSE
+					PhysicsLoop.Remove(src)
 
-	/* Called every physics-tick, just before velocity is applied.
+		/* Called every physics-tick, just before velocity is applied.
 		Only called when velocity is non-zero.
 		Available for overriding.
-	*/
-	proc/PhysicsUpdate(update_loop/Time)
+		*/
+		PhysicsUpdate(update_loop/Time)
 
-	proc/_PhysicsUpdate(update_loop/Time)
-		if(!entity.z)
-			SetVelocity()
+		_PhysicsUpdate(update_loop/Time)
+			if(!entity.z)
+				SetVelocity()
 
-		else
-			PhysicsUpdate(Time)
+			else
+				PhysicsUpdate(Time)
 
-			if(velocity)
-				entity.Translate(velocity.Multiply(Time.delta_time), translate_flags)
+				if(velocity)
+					entity.Translate(
+						velocity.Multiply(Time.delta_time), translate_flags)

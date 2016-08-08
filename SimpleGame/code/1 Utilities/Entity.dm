@@ -1,6 +1,6 @@
-var update_loop/component/ComponentUpdateLoop
+var update_loop/ComponentUpdateLoop/ComponentUpdateLoop
 
-update_loop/component
+update_loop/ComponentUpdateLoop
 	UpdateUpdaters()
 		var item, Entity/entity
 		for(item in updaters)
@@ -242,7 +242,8 @@ AbstractType(Entity)
 				if(length(_updatable_components) \
 				|| length(_late_updatable_components))
 					if(!ComponentUpdateLoop)
-						ComponentUpdateLoop = new /update_loop/component
+						ComponentUpdateLoop = \
+							new /update_loop/ComponentUpdateLoop
 					ComponentUpdateLoop.Add(src)
 			else
 				if(ComponentUpdateLoop)
@@ -261,7 +262,7 @@ AbstractType(Entity)
 
 			Updated()
 
-		/* Called periodically, but not before any UpdateComponents() calls. 
+		/* Called periodically, but not before any UpdateComponents() calls.
 		*/
 		LateUpdateComponents()
 			var item, Component/LateUpdatable/late_updatable

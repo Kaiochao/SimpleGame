@@ -12,6 +12,7 @@ AbstractType(Component/Weapon/Gun)
 	var tmp
 		cooldown/shot_cooldown = new (1)
 		_fire_button_downed
+		InputHandler/_input_handler
 
 	Update()
 		..()
@@ -22,86 +23,82 @@ AbstractType(Component/Weapon/Gun)
 
 	Start()
 		..()
-		var InputHandler/input_handler = GetWrappedValue(
+		_input_handler = GetWrappedValue(
 			/Component/Wrapper/InputHandler)
-		if(input_handler)
-			EVENT_ADD(input_handler.ButtonPressed, src,
+		if(_input_handler)
+			EVENT_ADD(_input_handler.ButtonPressed, src,
 				.proc/HandleButtonPressed)
 
 	Destroy()
 		..()
-		var InputHandler/input_handler = GetWrappedValue(
-			/Component/Wrapper/InputHandler)
-		if(input_handler)
-			EVENT_REMOVE(input_handler.ButtonPressed, src,
+		if(_input_handler)
+			EVENT_REMOVE(_input_handler.ButtonPressed, src,
 				.proc/HandleButtonPressed)
+			_input_handler = null
 
-	proc/CanShoot()
-		if(shot_cooldown && shot_cooldown.IsCoolingDown())
+	proc
+		CanShoot()
+			if(shot_cooldown && shot_cooldown.IsCoolingDown())
+				return FALSE
+
+			if(_fire_button_downed)
+				return TRUE
+
+			if(IsTriggerPulled())
+				return TRUE
+
 			return FALSE
 
-		if(_fire_button_downed)
-			return TRUE
+		IsTriggerPulled()
+			if(_input_handler)
+				return _input_handler.IsButtonPressed(fire_button) \
+					|| _input_handler.IsButtonPressed(gamepad_fire_button)
 
-		var InputHandler/input_handler = GetWrappedValue(
-			/Component/Wrapper/InputHandler)
-		if(input_handler && IsTriggerPulled())
-			return TRUE
+		HandleButtonPressed(InputHandler/InputHandler, Button)
+			if(Button == fire_button || Button == gamepad_fire_button)
+				_fire_button_downed = TRUE
 
-		return FALSE
+		Shoot()
+			var
+				Entity/bullet/bullet =	ObjectPool.Pop(BulletPool)
 
-	proc/IsTriggerPulled()
-		var InputHandler/input_handler = GetWrappedValue(
-			/Component/Wrapper/InputHandler)
-		if(input_handler)
-			return input_handler.IsButtonPressed(fire_button) \
-				|| input_handler.IsButtonPressed(gamepad_fire_button)
+				Component/physics/bullet/bullet_physics = bullet.GetComponent(
+					/Component/physics)
 
-	proc/HandleButtonPressed(InputHandler/InputHandler, Button)
-		if(Button == fire_button || Button == gamepad_fire_button)
-			_fire_button_downed = TRUE
+				vector2
+					muzzle_position = GetMuzzlePosition()
+					to_muzzle = muzzle_position.Subtract(entity.GetCenterPosition())
+					muzzle_velocity = GetMuzzleVelocity()
 
-	proc/Shoot()
-		var
-			Entity/bullet/bullet =	ObjectPool.Pop(BulletPool)
+			bullet.alpha = 0
+			animate(bullet, alpha = 255, time = world.tick_lag)
 
-			Component/physics/bullet/bullet_physics = bullet.GetComponent(
-				/Component/physics)
+			bullet_physics.drag = bullet_drag
+			bullet_physics.minimum_speed = bullet_minimum_speed
+			bullet_physics.initial_speed = muzzle_velocity.GetMagnitude()
+			bullet_physics.SetVelocity(muzzle_velocity)
 
-			vector2
-				muzzle_position = GetMuzzlePosition()
-				to_muzzle = muzzle_position.Subtract(entity.GetCenterPosition())
-				muzzle_velocity = GetMuzzleVelocity()
+			bullet.transform = initial(bullet.transform) \
+				* Math.DirectionToRotation(muzzle_velocity.GetNormalized())
 
-		bullet.alpha = 0
-		animate(bullet, alpha = 255, time = world.tick_lag)
+			bullet.SetCenter(entity)
+			bullet.Translate(to_muzzle)
 
-		bullet_physics.drag = bullet_drag
-		bullet_physics.minimum_speed = bullet_minimum_speed
-		bullet_physics.initial_speed = muzzle_velocity.GetMagnitude()
-		bullet_physics.SetVelocity(muzzle_velocity)
+			return bullet
 
-		bullet.transform = initial(bullet.transform) \
-			* Math.DirectionToRotation(muzzle_velocity.GetNormalized())
+		GetDirection()
+			return _aiming_handler.GetDirection()
 
-		bullet.SetCenter(entity)
-		bullet.Translate(to_muzzle)
+		GetMuzzlePosition()
+			var vector2/muzzle_position = _aiming_handler.GetDirection()
+			muzzle_position.Scale(body_length, Vector2Flags.Modify)
+			muzzle_position.Add(entity.GetCenterPosition(), Vector2Flags.Modify)
+			return muzzle_position
 
-		return bullet
-
-	proc/GetDirection()
-		return _aiming_handler.GetDirection()
-
-	proc/GetMuzzlePosition()
-		var vector2/muzzle_position = _aiming_handler.GetDirection()
-		muzzle_position.Scale(body_length, Vector2Flags.Modify)
-		muzzle_position.Add(entity.GetCenterPosition(), Vector2Flags.Modify)
-		return muzzle_position
-
-	proc/GetMuzzleVelocity()
-		var vector2/muzzle_velocity = GetDirection()
-		muzzle_velocity = muzzle_velocity.Scale(muzzle_speed)
-		return muzzle_velocity
+		GetMuzzleVelocity()
+			var vector2/muzzle_velocity = GetDirection()
+			muzzle_velocity = muzzle_velocity.Scale(muzzle_speed)
+			return muzzle_velocity
 
 
 	// === Concrete gun types
