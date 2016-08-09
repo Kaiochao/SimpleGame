@@ -60,19 +60,20 @@ Entity/bullet
 			smoke.SetCenter(src)
 			Pool()
 
-	proc/GetObjectPool()
-		return BulletPool
+	proc
+		GetObjectPool()
+			return BulletPool
 
-	proc/Unpooled(object_pool/ObjectPool)
-		SetUpdateEnabled(TRUE)
+		Unpooled(object_pool/ObjectPool)
+			SetUpdateEnabled(TRUE)
 
-	proc/Pooled(object_pool/ObjectPool)
-		SetUpdateEnabled(FALSE)
+		Pooled(object_pool/ObjectPool)
+			SetUpdateEnabled(FALSE)
 
-		var Component/physics/physics = GetComponent(/Component/physics)
-		physics.SetVelocity()
-		loc = null
+			var Component/physics/physics = GetComponent(/Component/physics)
+			physics.SetVelocity()
+			loc = null
 
-	proc/Pool()
-		if(!ObjectPool.Push(GetObjectPool(), src))
-			Pooled()
+		Pool()
+			if(!ObjectPool.Push(GetObjectPool(), src))
+				Pooled()

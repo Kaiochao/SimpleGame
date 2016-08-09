@@ -1,7 +1,8 @@
 AbstractType(Component/Weapon)
-	var tmp
+	var
 		obj/body
 
+	var tmp
 		Component/AimingHandler/_aiming_handler
 
 		vector2/_last_aim

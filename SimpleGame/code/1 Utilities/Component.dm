@@ -18,25 +18,26 @@ AbstractType(Component)
 		*/
 		_own_name
 
-	proc/SetName(Value)
-		name = "[Value]"
+	proc
+		SetName(Value)
+			name = "[Value]"
 
-	proc/GetName()
-		if(isnull(name))
-			SetName("[entity.name]:[GetOwnName()]")
-		return name
+		GetName()
+			if(isnull(name))
+				SetName("[entity.name]:[GetOwnName()]")
+			return name
 
-	/* For overriding when using the default GetName() behavior.
-	Defaults to the part of "[type]" after the final slash.
-	*/
-	proc/GetOwnName()
-		if(isnull(_own_name))
-			var type_text = "[type]"
-			_own_name = copytext(type_text, findlasttext(type_text, "/") + 1)
-		return _own_name
+		/* For overriding when using the default GetName() behavior.
+		Defaults to the part of "[type]" after the final slash.
+		*/
+		GetOwnName()
+			if(isnull(_own_name))
+				var type_text = "[type]"
+				_own_name = copytext(type_text, findlasttext(type_text, "/") + 1)
+			return _own_name
 
-	proc/GetComponent(ComponentType)
-		return entity.GetComponent(ComponentType)
+		GetComponent(ComponentType)
+			return entity.GetComponent(ComponentType)
 
 	/* Optional callbacks, which are only called if they're defined.
 	*/

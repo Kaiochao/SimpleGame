@@ -6,28 +6,29 @@ mob/lobby
 			physics_updaters_list_stat
 			updating_components_list_stat
 
-	proc/Join()
-		player = new /Entity/player (null, client)
+	proc
+		Join()
+			player = new /Entity/player (null, client)
 
-		var
-			Component/WeaponHandler/weapon_handler = player.GetComponent(
-				/Component/WeaponHandler)
-			global/vector2/start_position = new /vector2 (
-				world.maxx * TILE_WIDTH / 2,
-				world.maxy * TILE_HEIGHT / 2)
+			var
+				Component/WeaponHandler/weapon_handler = player.GetComponent(
+					/Component/WeaponHandler)
+				global/vector2/start_position = new /vector2 (
+					world.maxx * TILE_WIDTH / 2,
+					world.maxy * TILE_HEIGHT / 2)
 
-		player.SetCenter(start_position, 1)
+			player.SetCenter(start_position, 1)
 
-		if(weapon_handler)
-			var Component/Weapon/Gun/inaccurate
-				rifle = new
-				spread/shotgun = new
+			if(weapon_handler)
+				var Component/Weapon/Gun/inaccurate
+					rifle = new
+					spread/shotgun = new
 
-			rifle.SetBody(new /obj/gun_body/rifle)
-			shotgun.SetBody(new /obj/gun_body/shotgun)
+				rifle.SetBody(new /obj/gun_body/rifle)
+				shotgun.SetBody(new /obj/gun_body/shotgun)
 
-			weapon_handler.SetWeapons(list(rifle, shotgun))
-			weapon_handler.EquipWeapon(rifle)
+				weapon_handler.SetWeapons(list(rifle, shotgun))
+				weapon_handler.EquipWeapon(rifle)
 
 	Stat()
 		statpanel("DEBUG")
@@ -77,23 +78,23 @@ obj/gun_body
 	shotgun
 		transform = matrix(5/32, 0, 0, 0, 20/32, 20)
 
-/* Return a shortened form of a potentially long list.
-The result is a comma-separated sequence of no more than 6 entries,
-always including the first and last 3 items.
-*/
-proc/jointext_short(List[], Separator = ", ", EndCount = 3)
-	var length = length(List)
-	switch(length)
-		if(0)
+
+proc
+	/* Return a shortened form of a potentially long list.
+	The result is a comma-separated sequence of no more than 6 entries,
+	always including the first and last 3 items.
+	*/
+	jointext_short(List[], Separator = ", ", EndCount = 5)
+		var length = length(List)
+		if(length == 0)
 			return null
 
-		if(1 to 6)
+		if(length in 1 to 2*EndCount)
 			return jointext(List, Separator)
 
-		else
-			return "[jointext(List, Separator, 1, EndCount + 1)]\
-				[Separator]...([length - 6] more)...[Separator]\
-				[jointext(List, Separator, -EndCount, length)]"
+		return "[jointext(List, Separator, 1, EndCount + 1)]\
+			[Separator]...([length - 2*EndCount] more)...[Separator]\
+			[jointext(List, Separator, -EndCount, length)]"
 
 obj/stat_toggle
 	var tmp

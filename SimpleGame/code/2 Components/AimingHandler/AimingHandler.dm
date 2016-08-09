@@ -1,2 +1,3 @@
 AbstractType(Component/AimingHandler)
-	proc/GetDirection()
+	proc
+		GetDirection()

@@ -31,26 +31,25 @@ update_loop
 			callback = Callback
 
 		StartUpdating()
-
-	proc/StartUpdating()
-		set waitfor = FALSE
-
-		for()
-			if(updaters)
+			if(_is_running) return
+			var start_time = world.time
+			_is_running = start_time
+			while(_is_running == start_time && length(updaters))
 				while(updaters.Remove(null))
-				if(!length(updaters)) updaters = null
-
-			if(updaters)
+				if(!length(updaters))
+					updaters = null
+					break
 				UpdateUpdaters()
+				sleep world.tick_lag
+			if(_is_running == start_time) _is_running = FALSE
 
-			sleep world.tick_lag
+		UpdateUpdaters()
+			for(var/item in updaters)
+				Update(item)
+				sleep -1
 
-	proc/UpdateUpdaters()
-		for(var/item in updaters)
-			Update(item)
-
-	proc/Update(Updater)
-		var time = world.time
-		delta_time = (time - last_update_time[Updater]) / 10
-		last_update_time[Updater] = time
-		call(Updater, callback)(src)
+		Update(Updater)
+			var time = world.time
+			delta_time = (time - last_update_time[Updater]) / 10
+			last_update_time[Updater] = time
+			call(Updater, callback)(src)
