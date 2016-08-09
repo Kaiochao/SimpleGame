@@ -1,9 +1,4 @@
-#include <Kaiochao\Enum\Enum.dme>
-
 #define VECTOR2_ZERO (new /vector2 (0, 0))
-
-ENUM(Vector2Flags)
-	Modify = 1
 
 var Vector2Static/vector2 = new
 
@@ -69,48 +64,26 @@ vector2
 		IsZero()
 			return _x == 0 && _y == 0
 
-		Add(vector2/V, Vector2Flags/Flags)
-			if(Flags & Vector2Flags.Modify)
-				_x += V._x
-				_y += V._y
-			else return new /vector2 (_x + V._x, _y + V._y)
+		Add(vector2/V)
+			return new /vector2 (_x + V._x, _y + V._y)
 
-		Subtract(vector2/V, Vector2Flags/Flags)
-			if(Flags & Vector2Flags.Modify)
-				_x -= V._x
-				_y -= V._y
-			else return new /vector2 (_x - V._x, _y - V._y)
+		Subtract(vector2/V)
+			return new /vector2 (_x - V._x, _y - V._y)
 
-		Multiply(M, Vector2Flags/Flags)
-			if(Flags & Vector2Flags.Modify)
-				if(M)
-					_x *= M
-					_y *= M
-				else
-					_x = 0
-					_y = 0
-			else return M ? new /vector2 (_x * M, _y * M) : VECTOR2_ZERO
+		Multiply(M)
+			return M ? new /vector2 (_x * M, _y * M) : VECTOR2_ZERO
 
-		Divide(D, Vector2Flags/Flags)
-			if(Flags & Vector2Flags.Modify)
-				_x /= D
-				_y /= D
-			else return new /vector2 (_x / D, _y / D)
+		Divide(D)
+			return new /vector2 (_x / D, _y / D)
 
-		Scale(S, Vector2Flags/Flags)
-			return Multiply(S, Flags)
+		Scale(S)
+			return Multiply(S)
 
-		Turn(Degrees, Vector2Flags/Flags)
-			var c = cos(Degrees)
-			var s = sin(Degrees)
-			if(Flags & Vector2Flags.Modify)
-				var new_x = c * _x - s * _y
-				var new_y = s * _x + c * _y
-				_x = new_x
-				_y = new_y
-			else return new /vector2 (c * _x - s * _y, s * _x + c * _y)
+		Turn(Degrees)
+			var c = cos(Degrees), s = sin(Degrees)
+			return new /vector2 (c * _x - s * _y, s * _x + c * _y)
 
-		Dampen(vector2/End, T, DeltaTime, Vector2Flags/Flags)
+		Dampen(vector2/End, T, DeltaTime)
 			var end_x, end_y
 
 			if(isnum(End))
@@ -120,16 +93,11 @@ vector2
 				end_x = End._x
 				end_y = End._y
 
-			if(Flags & Vector2Flags.Modify)
-				_x = Math.Dampen(_x, end_x, T, DeltaTime)
-				_y = Math.Dampen(_y, end_y, T, DeltaTime)
+			var vector2/dampened = new (
+				Math.Dampen(_x, end_x, T, DeltaTime),
+				Math.Dampen(_y, end_y, T, DeltaTime))
 
-			else
-				var vector2/dampened = new (
-					Math.Dampen(_x, end_x, T, DeltaTime),
-					Math.Dampen(_y, end_y, T, DeltaTime))
-
-				return dampened
+			return dampened
 
 		GetNormalized()
 			return (_x || _y) ? Scale(1 / GetMagnitude()) : VECTOR2_ZERO

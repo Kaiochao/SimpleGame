@@ -90,15 +90,12 @@ AbstractType(Component/Weapon/Gun)
 			return _aiming_handler.GetDirection()
 
 		GetMuzzlePosition()
-			var vector2/muzzle_position = _aiming_handler.GetDirection()
-			muzzle_position.Scale(body_length, Vector2Flags.Modify)
-			muzzle_position.Add(entity.GetCenterPosition(), Vector2Flags.Modify)
-			return muzzle_position
+			var vector2/direction = _aiming_handler.GetDirection()
+			return new /vector2 (
+				direction.GetX() * body_length + entity.GetCenterX(),
+				direction.GetY() * body_length + entity.GetCenterY())
 
 		GetMuzzleVelocity()
-			var vector2/muzzle_velocity = GetDirection()
-			muzzle_velocity = muzzle_velocity.Scale(muzzle_speed)
-			return muzzle_velocity
 
 
 	// === Concrete gun types
@@ -148,3 +145,5 @@ AbstractType(Component/Weapon/Gun)
 							bullet_physics.velocity.Scale(
 								random_velocity_scale)
 							)
+			var vector2/direction = _aiming_handler.GetDirection()
+			return direction.Multiply(muzzle_speed)
