@@ -1,10 +1,9 @@
 AbstractType(Component/WeaponHandler)
-	var
+	var tmp
 		Component/Weapon
 			_weapon
 			_weapons[]
 
-	var tmp
 		_is_using
 
 	EVENT(StartedUsing, Component/WeaponHandler/WeaponHandler)

@@ -19,7 +19,8 @@ Entity/player
 		color = "blue"
 		transform = matrix(24/32, 0, 0, 0, 24/32, 0)
 
-	var client/_client
+	var tmp
+		client/_client
 
 	New(atom/Loc, client/Client)
 		_client = Client

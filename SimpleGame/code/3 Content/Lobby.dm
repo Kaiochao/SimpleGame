@@ -81,7 +81,7 @@ mob/lobby
 
 obj/gun_body
 	icon_state = "rect"
-	color = "black"
+	color = rgb(0, 0, 0)
 
 	rifle
 		transform = matrix(3/32, 0, 0, 0, 24/32, 24)

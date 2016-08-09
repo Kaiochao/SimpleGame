@@ -41,12 +41,11 @@ update_loop/EntityUpdateLoop
 AbstractType(Entity)
 	parent_type = /obj
 
-	var
+	var tmp
 		/* Set of components added to this entity.
 		*/
 		_components[]
 
-	var tmp
 		/* Subset of components: components with Update defined.
 		*/
 		_updatable_components[]

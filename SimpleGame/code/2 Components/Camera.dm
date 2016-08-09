@@ -11,7 +11,7 @@ Component/camera
 		// jump to the entity instead of moving gradually.
 		jump_threshold = 640
 
-		_attached
+		_attached = TRUE
 
 	var tmp
 		client/_client
