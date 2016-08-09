@@ -34,6 +34,7 @@ Entity/player
 				InputHandler/input_handler_wrapper = new
 			WeaponHandler/weapon_handler = new /Component/WeaponHandler/player
 			physics/physics = new
+			camera/camera = new
 
 		client_wrapper.Set(_client)
 		input_handler_wrapper.Set(_client)
@@ -43,12 +44,13 @@ Entity/player
 				client_wrapper,
 				input_handler_wrapper,
 				physics,
-				weapon_handler
+				weapon_handler,
+				camera
 			) + newlist(
-				/Component/camera,
 				/Component/MovementHandler/player,
 				/Component/AimingHandler/player
 			)
 		)
 
 		physics.translate_flags = TranslateFlags.EnableSliding
+		camera.speed = 5
