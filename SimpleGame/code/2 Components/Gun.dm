@@ -96,54 +96,5 @@ AbstractType(Component/Weapon/Gun)
 				direction.GetY() * body_length + entity.GetCenterY())
 
 		GetMuzzleVelocity()
-
-
-	// === Concrete gun types
-
-	inaccurate
-		body_length = 40
-		var
-			inaccuracy = 2
-
-		GetDirection()
-			var vector2/direction = ..()
-			return direction.Turn(
-				pick(1, -1) * inaccuracy * (2 * rand() - 1) ** 2)
-
-		GetOwnName()
-			return "inaccurate automatic gun"
-
-		spread
-			inaccuracy = 10
-			shot_cooldown = new (5)
-			body_length = 35
-
-			var
-				spread_count = 6
-				velocity_max_scale = 0.3
-
-			GetOwnName()
-				return "spread shot gun"
-
-			Shoot()
-				var
-					Entity/bullet/bullet
-					Component/physics/bullet/bullet_physics
-					n
-					random_velocity_scale
-
-				for(n in 1 to spread_count)
-					bullet = ..()
-					bullet_physics = bullet.GetComponent(/Component/physics)
-
-					bullet_physics.drag = 2
-					bullet_physics.minimum_speed = 300
-
-					random_velocity_scale = 1 - rand() * velocity_max_scale
-					if(bullet_physics.velocity)
-						bullet_physics.SetVelocity(
-							bullet_physics.velocity.Scale(
-								random_velocity_scale)
-							)
 			var vector2/direction = _aiming_handler.GetDirection()
 			return direction.Multiply(muzzle_speed)
