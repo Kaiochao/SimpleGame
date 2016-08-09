@@ -46,16 +46,12 @@ mob/lobby
 
 		stat("world.cpu", "[world.cpu]%")
 
-		stat("Updating Entities",
-			"[EntityUpdateLoop && length(EntityUpdateLoop.updaters)]")
-		updaters_list_stat.SetText(
-			jointext_short(EntityUpdateLoop.updaters, ", \n"))
+		stat("Updating Entities", "[EntityUpdateLoop && length(EntityUpdateLoop.updaters)]")
+		updaters_list_stat.SetText(jointext_short(EntityUpdateLoop.updaters, ", \n"))
 		stat(updaters_list_stat)
 
-		stat("Physics Updaters",
-			"[PhysicsLoop && length(PhysicsLoop.updaters)]")
-		physics_updaters_list_stat.SetText(
-			jointext_short(PhysicsLoop.updaters, ", \n"))
+		stat("Physics Updaters", "[PhysicsLoop && length(PhysicsLoop.updaters)]")
+		physics_updaters_list_stat.SetText(jointext_short(PhysicsLoop.updaters, ", \n"))
 		stat(physics_updaters_list_stat)
 
 		var updating_components[0]
@@ -63,8 +59,7 @@ mob/lobby
 			if(e.IsUpdateEnabled() && length(e._updatable_components))
 				updating_components += e._updatable_components
 		stat("Updating Components", "[length(updating_components)]")
-		updating_components_list_stat.SetText(
-			jointext_short(updating_components, ", \n"))
+		updating_components_list_stat.SetText(jointext_short(updating_components, ", \n"))
 		stat(updating_components_list_stat)
 
 	Login()
