@@ -1,8 +1,5 @@
 AbstractType(Component/Weapon/Gun)
 	var
-		fire_button = MouseButton.Left
-		gamepad_fire_button = GamepadButton.R2
-
 		muzzle_speed = 1600
 		body_length = 32
 
@@ -11,67 +8,55 @@ AbstractType(Component/Weapon/Gun)
 
 	var tmp
 		cooldown/shot_cooldown = new (1)
-		_fire_button_downed
-		InputHandler/_input_handler
+		Component/WeaponHandler/_weapon_handler
+		_used
 
 	Update()
 		..()
 		if(CanShoot())
-			_fire_button_downed = FALSE
-			shot_cooldown.Start()
+			_used = FALSE
+			if(shot_cooldown)
+				shot_cooldown.Start()
 			Shoot()
 
 	Start()
 		..()
-		_input_handler = GetWrappedValue(
-			/Component/Wrapper/InputHandler)
-		if(_input_handler)
-			EVENT_ADD(_input_handler.ButtonPressed, src,
-				.proc/HandleButtonPressed)
+		_weapon_handler = GetComponent(/Component/WeaponHandler)
+		EVENT_ADD(_weapon_handler.StartedUsing, src, .proc/HandleStartedUsing)
 
 	Destroy()
 		..()
-		if(_input_handler)
-			EVENT_REMOVE(_input_handler.ButtonPressed, src,
-				.proc/HandleButtonPressed)
-			_input_handler = null
+		if(_weapon_handler)
+			EVENT_REMOVE_OBJECT(_weapon_handler.StartedUsing, src)
 
 	proc
+		HandleStartedUsing()
+			_used = TRUE
+
 		CanShoot()
-			if(shot_cooldown && shot_cooldown.IsCoolingDown())
-				return FALSE
+			return _used \
+			|| _weapon_handler.IsUsing() \
+				&& !(shot_cooldown && shot_cooldown.IsCoolingDown())
 
-			if(_fire_button_downed)
-				return TRUE
+		/* Launches a bullet.
+		 	Starts from the shooter's center, but moves immediately to GetMuzzlePosition().
+			Initial velocity given by GetMuzzleVelocity().
 
-			if(IsTriggerPulled())
-				return TRUE
-
-			return FALSE
-
-		IsTriggerPulled()
-			if(_input_handler)
-				return _input_handler.IsButtonPressed(fire_button) \
-					|| _input_handler.IsButtonPressed(gamepad_fire_button)
-
-		HandleButtonPressed(InputHandler/InputHandler, Button)
-			if(Button == fire_button || Button == gamepad_fire_button)
-				_fire_button_downed = TRUE
-
+			Returns the bullet launched, or a list of bullets launched.
+		*/
 		Shoot()
 			var
 				Entity/bullet/bullet =	ObjectPool.Pop(BulletPool)
 
-				Component/physics/bullet/bullet_physics = bullet.GetComponent(
-					/Component/physics)
+				Component/physics/bullet/bullet_physics = bullet.GetComponent(/Component/physics)
 
 				vector2
 					muzzle_position = GetMuzzlePosition()
 					to_muzzle = muzzle_position.Subtract(entity.GetCenterPosition())
 					muzzle_velocity = GetMuzzleVelocity()
 
-			bullet.alpha = 0
-			animate(bullet, alpha = 255, time = world.tick_lag)
+			// bullet.alpha = 0
+			// animate(bullet, alpha = 255, time = world.tick_lag)
 
 			bullet_physics.drag = bullet_drag
 			bullet_physics.minimum_speed = bullet_minimum_speed
@@ -85,9 +70,6 @@ AbstractType(Component/Weapon/Gun)
 			bullet.Translate(to_muzzle)
 
 			return bullet
-
-		GetDirection()
-			return _aiming_handler.GetDirection()
 
 		GetMuzzlePosition()
 			var vector2/direction = _aiming_handler.GetDirection()
