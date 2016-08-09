@@ -1,10 +1,30 @@
 update_loop
+	TEMPORARY
+
 	var
+		/* Name or path of a proc defined for added updaters.
+		*/
 		callback
 
-		updaters[]
-		last_update_time[]
+		/* Read-only: time (in seconds) since the last update.
+		*/
 		delta_time
+
+		/* Set of updaters.
+		*/
+		updaters[]
+
+		/* Remembers when (in terms of world.time) an updater was last updated.
+		*/
+		last_update_time[]
+
+		/* Prevents multiple iteration loops in the same object.
+		*/
+		_is_running
+
+	New(Callback)
+		if(!isnull(Callback))
+			callback = Callback
 
 	proc
 		Add(Updater)
@@ -12,8 +32,12 @@ update_loop
 				updaters = new
 				last_update_time = new
 
-			updaters[Updater] = TRUE
-			last_update_time[Updater] = world.time
+			if(!updaters[Updater])
+				updaters[Updater] = TRUE
+				last_update_time[Updater] = world.time
+
+			if(!_is_running)
+				spawn StartUpdating()
 
 		Remove(Updater)
 			if(length(updaters))
@@ -25,10 +49,6 @@ update_loop
 
 				else
 					last_update_time -= Updater
-
-	New(Callback)
-		if(!isnull(Callback))
-			callback = Callback
 
 		StartUpdating()
 			if(_is_running) return
