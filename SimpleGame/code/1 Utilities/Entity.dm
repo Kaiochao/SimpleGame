@@ -179,8 +179,6 @@ AbstractType(Entity)
 				component.entity = src
 				component.GetName()
 
-				component.Time = EntityUpdateLoop
-
 				if(!_components[component])
 					_components[component] = TRUE
 
@@ -250,7 +248,6 @@ AbstractType(Entity)
 						_late_updatable_components = null
 
 				component.entity = null
-				component.Time = null
 
 			_CheckUpdates()
 
@@ -294,7 +291,12 @@ AbstractType(Entity)
 
 			for(item in _updatable_components)
 				updatable = item
+				updatable.Time = EntityUpdateLoop
+
+			for(item in _updatable_components)
+				updatable = item
 				updatable.Update()
+				updatable.Time = null
 
 			Updated()
 
@@ -305,6 +307,11 @@ AbstractType(Entity)
 
 			for(item in _late_updatable_components)
 				late_updatable = item
+				late_updatable.Time = EntityUpdateLoop
+
+			for(item in _late_updatable_components)
+				late_updatable = item
 				late_updatable.LateUpdate()
+				late_updatable.Time = null
 
 			LateUpdated()

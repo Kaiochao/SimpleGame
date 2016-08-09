@@ -1,12 +1,12 @@
 AbstractType(Component)
-
-	var global
-		update_loop/Time
-
 	var tmp
 		/* Entity that this component is attached to.
 		*/
 		Entity/entity
+
+		/* Update loop that caused this component to be updated.
+		*/
+		update_loop/Time
 
 		/* Visible name of this component, including the entity's name.
 		Access restricted; use [SetName(Value)] and [GetName()].
@@ -44,6 +44,7 @@ AbstractType(Component)
 
 	Startable
 		parent_type = /Interface
+
 		proc
 			/* Called after the component is added.
 
@@ -57,6 +58,10 @@ AbstractType(Component)
 
 	Updatable
 		parent_type = /Interface
+
+		var tmp
+			update_loop/Time
+
 		proc
 			/* Called every frame.
 			*/
@@ -64,6 +69,10 @@ AbstractType(Component)
 
 	LateUpdatable
 		parent_type = /Interface
+
+		var tmp
+			update_loop/Time
+
 		proc
 			/* Called every frame after all Update calls.
 			*/
@@ -71,6 +80,7 @@ AbstractType(Component)
 
 	Destroyable
 		parent_type = /Interface
+		
 		proc
 			/* Called before the component is removed.
 
