@@ -31,14 +31,25 @@ mob/lobby
 				weapon_handler.EquipWeapon(rifle)
 
 	Stat()
+		statpanel("Info")
+		stat("Controls", "")
+		stat("Move", "WASD")
+		stat("Walk", "Hold Shift")
+		stat("Shoot", "Hold LMB")
+		stat("Aim", "Hold RMB")
+		stat("Cycle Weapons", "Mouse Scroll")
+		stat("Options", "F1")
+		stat("Resize", "F3")
+		stat("Quit", "Escape")
+
 		statpanel("DEBUG")
 
 		stat("world.cpu", "[world.cpu]%")
 
 		stat("Updating Entities",
-			"[ComponentUpdateLoop && length(ComponentUpdateLoop.updaters)]")
+			"[EntityUpdateLoop && length(EntityUpdateLoop.updaters)]")
 		updaters_list_stat.SetText(
-			jointext_short(ComponentUpdateLoop.updaters, ", \n"))
+			jointext_short(EntityUpdateLoop.updaters, ", \n"))
 		stat(updaters_list_stat)
 
 		stat("Physics Updaters",

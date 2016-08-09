@@ -31,9 +31,9 @@ window "default"
 		drop-zone = true
 		right-click = true
 		saved-params = "icon-size"
-		icon-size = 32
+		icon-size = 16
 		letterbox = false
-		zoom = 1
+		zoom = 0.500000
 
 window "info"
 	elem "info"
