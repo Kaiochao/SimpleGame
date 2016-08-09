@@ -18,14 +18,16 @@ Component/physics
 	var tmp
 		_is_physics_enabled = FALSE
 
-	New()
-		..()
-		SetVelocity(velocity)
-
 	/* Set velocity.
 		See: PhysicsUpdate()
 	*/
 	proc
+		Start()
+			SetVelocity(velocity)
+
+		Destroy()
+			SetVelocity()
+
 		SetVelocity(vector2/Velocity)
 			if(velocity == Velocity || Velocity && Velocity.Equals(velocity))
 				return

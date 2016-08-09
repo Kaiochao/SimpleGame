@@ -54,7 +54,7 @@ Entity/bullet
 	Translate(vector2/V)
 		. = ..()
 		var atom/movable/translate_result/result = .
-		if(!result || result.bump_dir)
+		if(result && result.bump_dir)
 			var Entity/particle/smoke = ObjectPool.Pop(ParticlePool)
 			smoke.AddComponent(new /Component/ParticleEffector/smoke)
 			smoke.SetCenter(src)
