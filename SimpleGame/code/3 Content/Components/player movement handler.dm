@@ -12,9 +12,9 @@ Component/MovementHandler/player
 		speed_button = KeyButton.Shift
 		gamepad_speed_button = GamepadButton.L3
 
-		tmp
-			vector2/velocity
-			InputHandler/_input_handler
+	var tmp
+		vector2/velocity
+		InputHandler/_input_handler
 
 	GetVelocity()
 		return velocity || ..()
