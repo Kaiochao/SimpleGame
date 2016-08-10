@@ -1,11 +1,3 @@
-var update_loop/PhysicsLoop/PhysicsLoop = new ("_PhysicsUpdate")
-
-update_loop/PhysicsLoop
-	Update(Updater)
-		if(world.tick_usage > 75)
-			sleep world.tick_lag
-		..()
-
 Component/physics
 	/* Distance covered per second, in pixels.
 		Actual movement occurs every tick of the Physics Clock.
@@ -17,6 +9,18 @@ Component/physics
 
 	var tmp
 		_is_physics_enabled = FALSE
+
+	var global
+		update_loop/update_loop
+
+	update_loop
+		parent_type = /update_loop
+		callback = "_PhysicsUpdate"
+
+		Update(Updater)
+			if(world.tick_usage > 75)
+				sleep world.tick_lag
+			..()
 
 	/* Set velocity.
 		See: PhysicsUpdate()
@@ -36,13 +40,17 @@ Component/physics
 				velocity = Velocity.Copy()
 				if(_is_physics_enabled) return
 				_is_physics_enabled = TRUE
-				PhysicsLoop.Add(src)
+				if(!update_loop)
+					update_loop = new /Component/physics/update_loop
+				update_loop.Add(src)
 
 			else
 				velocity = null
 				if(_is_physics_enabled)
 					_is_physics_enabled = FALSE
-					PhysicsLoop.Remove(src)
+					update_loop.Remove(src)
+					if(!update_loop.updaters)
+						update_loop = null
 
 		/* Called every physics-tick, just before velocity is applied.
 		Only called when velocity is non-zero.

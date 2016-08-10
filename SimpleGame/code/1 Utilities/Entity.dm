@@ -4,6 +4,45 @@ AbstractType(Entity)
 	var global
 		update_loop/update_loop
 
+	/* Modified update loop that adds a "late update" stage, after the normal update.
+	*/
+	update_loop
+		parent_type = /update_loop
+		var
+			last_late_update_time[]
+
+		Add(Updater)
+			..()
+			if(!last_late_update_time)
+				last_late_update_time = new
+			last_late_update_time[Updater] = world.time
+
+		Remove(Updater)
+			..()
+			if(updaters)
+				last_late_update_time -= Updater
+			else
+				last_late_update_time = null
+
+		UpdateUpdaters()
+			var item, time, Entity/entity, const/units = 0.1
+
+			for(item in updaters)
+				entity = item
+				time = world.time
+				delta_time = (time - last_update_time[item]) * units
+				last_update_time[item] = time
+				entity.UpdateComponents(src)
+				sleep -1
+
+			for(item in updaters)
+				entity = item
+				time = world.time
+				delta_time = (time - last_late_update_time[item]) * units
+				last_late_update_time[item] = time
+				entity.LateUpdateComponents(src)
+				sleep -1
+
 	var tmp
 		/* Set of components added to this entity.
 		*/
@@ -238,7 +277,7 @@ AbstractType(Entity)
 				if(length(_updatable_components) \
 				|| length(_late_updatable_components))
 					if(!update_loop)
-						update_loop = new /update_loop/Entity
+						update_loop = new /Entity/update_loop
 					update_loop.Add(src)
 			else
 				if(update_loop)
