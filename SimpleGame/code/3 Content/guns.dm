@@ -2,7 +2,7 @@ Component/Weapon/Gun
 	inaccurate
 		body_length = 40
 		var
-			inaccuracy = 2
+			inaccuracy = 5
 
 		GetMuzzleVelocity()
 			var vector2/velocity = ..()
