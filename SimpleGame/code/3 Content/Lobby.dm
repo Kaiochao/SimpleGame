@@ -1,10 +1,16 @@
 mob/lobby
 	var tmp
 		Entity/player
-		obj/stat_toggle
-			updaters_list_stat
-			physics_updaters_list_stat
-			updating_components_list_stat
+
+		// Debug information
+		stat_toggle
+			stat_toggle_updaters
+			stat_toggle_physics_updaters
+			stat_toggle_updating_components
+
+	Stat()
+		Stat_DisplayControlsPanel()
+		Stat_DisplayDebugPanel()
 
 	proc
 		Join()
@@ -30,45 +36,68 @@ mob/lobby
 				weapon_handler.SetWeapons(list(rifle, shotgun))
 				weapon_handler.EquipWeapon(rifle)
 
-	Stat()
-		statpanel("Info")
-		stat("Controls", "")
-		stat("Move", "WASD")
-		stat("Walk", "Hold Shift")
-		stat("Shoot", "Hold LMB")
-		stat("Aim", "Hold RMB")
-		stat("Cycle Weapons", "Mouse Scroll")
-		stat("Options", "F1")
-		stat("Resize", "F3")
-		stat("Quit", "Escape")
+		Stat_DisplayControlsPanel()
+			statpanel("Controls")
+			stat("Move", "WASD")
+			stat("Walk", "Hold Shift")
+			stat("Shoot", "Hold LMB")
+			stat("Aim", "Hold RMB")
+			stat("Cycle Weapons", "Mouse Scroll")
+			stat("Options", "F1")
+			stat("Resize", "F3")
+			stat("Quit", "Escape")
 
-		statpanel("DEBUG")
+		Stat_DisplayDebugPanel()
+			statpanel("DEBUG")
+			stat("world.cpu", "[world.cpu]%")
+			Stat_DisplayUpdatingEntities()
+			Stat_DisplayUpdatingComponents()
+			Stat_DisplayPhysicsUpdaters()
 
-		stat("world.cpu", "[world.cpu]%")
+		Stat_DisplayToggleList(list/List, stat_toggle/StatToggle, Title)
+			var stat_text
+			if(List)
+				stat_text = "[length(List)]"
+				StatToggle.SetText(jointext_short(List, ", \n"))
+			else
+				stat_text = "None"
+				StatToggle.SetText()
+			stat(Title, stat_text)
+			stat(StatToggle)
 
-		stat("Updating Entities", "[player.update_loop && length(player.update_loop.updaters)]")
-		updaters_list_stat.SetText(jointext_short(player.update_loop.updaters, ", \n"))
-		stat(updaters_list_stat)
+		Stat_DisplayUpdatingEntities()
+			if(player && player.update_loop)
+				Stat_DisplayToggleList(player.update_loop.updaters, stat_toggle_updaters, "Updating Entities")
 
-		stat("Physics Updaters", "[PhysicsLoop && length(PhysicsLoop.updaters)]")
-		physics_updaters_list_stat.SetText(jointext_short(PhysicsLoop.updaters, ", \n"))
-		stat(physics_updaters_list_stat)
+		Stat_DisplayPhysicsUpdaters()
+			var Component/physics/physics = player.GetComponent(/Component/physics)
+			if(physics && physics.update_loop)
+				Stat_DisplayToggleList(physics.update_loop.updaters, stat_toggle_physics_updaters, "Physics Updaters")
 
-		var updating_components[0]
-		for(var/Entity/e)
-			if(e.IsUpdateEnabled() && length(e._updatable_components))
-				updating_components += e._updatable_components
-		stat("Updating Components", "[length(updating_components)]")
-		updating_components_list_stat.SetText(jointext_short(updating_components, ", \n"))
-		stat(updating_components_list_stat)
+		// Display components that are updating and late-updating
+		Stat_DisplayUpdatingComponents()
+			var updating_components[0]
+
+			// Find all updating components of enabled entities
+			for(var/Entity/e)
+				if(e.IsUpdateEnabled() && length(e._updatable_components))
+					updating_components += e._updatable_components
+
+			// Find all late-updating components of enabled entities
+			for(var/Entity/e)
+				if(e.IsUpdateEnabled() && length(e._late_updatable_components))
+					updating_components += e._late_updatable_components
+
+			Stat_DisplayToggleList(updating_components, stat_toggle_updating_components, "Updating Components")
 
 	Login()
 		Join()
-		updaters_list_stat = new
-		physics_updaters_list_stat = new
-		updating_components_list_stat = new
+		stat_toggle_updaters = new
+		stat_toggle_physics_updaters = new
+		stat_toggle_updating_components = new
 
 	Logout()
+		..()
 		key = null
 		loc = null
 		if(player)
@@ -102,7 +131,8 @@ proc
 			[Separator]...([length - 2*EndCount] more)...[Separator]\
 			[jointext(List, Separator, -EndCount, length)]"
 
-obj/stat_toggle
+stat_toggle
+	parent_type = /obj
 	var tmp
 		_is_showing
 		_text
