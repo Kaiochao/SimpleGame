@@ -64,8 +64,9 @@ Component/camera
 					SetPosition(_target.GetCenterX(), _target.GetCenterY())
 
 			var
-				X = Math.Dampen(_last_x, x, speed, Time.delta_time)
-				Y = Math.Dampen(_last_y, y, speed, Time.delta_time)
+				delta_time = entity.update_loop.delta_time
+				X = Math.Dampen(_last_x, x, speed, delta_time)
+				Y = Math.Dampen(_last_y, y, speed, delta_time)
 				adx = Math.Ceil(abs(X - _last_x))
 				ady = Math.Ceil(abs(Y - _last_y))
 				step_size = max(adx, ady)

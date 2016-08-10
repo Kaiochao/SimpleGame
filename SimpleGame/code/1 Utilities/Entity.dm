@@ -1,45 +1,8 @@
-var update_loop/EntityUpdateLoop/EntityUpdateLoop
-
-/* Modified update loop that adds a "late update" stage, after the normal update.
-*/
-update_loop/EntityUpdateLoop
-	var
-		last_late_update_time[]
-
-	Add(Updater)
-		..()
-		if(!last_late_update_time)
-			last_late_update_time = new
-		last_late_update_time[Updater] = world.time
-
-	Remove(Updater)
-		..()
-		if(updaters)
-			last_late_update_time -= Updater
-		else
-			last_late_update_time = null
-
-	UpdateUpdaters()
-		var item, time, Entity/entity, const/units = 0.1
-
-		for(item in updaters)
-			entity = item
-			time = world.time
-			delta_time = (time - last_update_time[item]) * units
-			last_update_time[item] = time
-			entity.UpdateComponents(src)
-			sleep -1
-
-		for(item in updaters)
-			entity = item
-			time = world.time
-			delta_time = (time - last_late_update_time[item]) * units
-			last_late_update_time[item] = time
-			entity.LateUpdateComponents(src)
-			sleep -1
-
 AbstractType(Entity)
 	parent_type = /obj
+
+	var global
+		update_loop/update_loop
 
 	var tmp
 		/* Set of components added to this entity.
@@ -274,15 +237,14 @@ AbstractType(Entity)
 			if(IsUpdateEnabled())
 				if(length(_updatable_components) \
 				|| length(_late_updatable_components))
-					if(!EntityUpdateLoop)
-						EntityUpdateLoop = \
-							new /update_loop/EntityUpdateLoop
-					EntityUpdateLoop.Add(src)
+					if(!update_loop)
+						update_loop = new /update_loop/Entity
+					update_loop.Add(src)
 			else
-				if(EntityUpdateLoop)
-					EntityUpdateLoop.Remove(src)
-					if(!EntityUpdateLoop.updaters)
-						EntityUpdateLoop = null
+				if(update_loop)
+					update_loop.Remove(src)
+					if(!update_loop.updaters)
+						update_loop = null
 
 		/* Called periodically when this Entity has an updatable component.
 		*/
@@ -291,12 +253,10 @@ AbstractType(Entity)
 
 			for(item in _updatable_components)
 				updatable = item
-				updatable.Time = EntityUpdateLoop
 
 			for(item in _updatable_components)
 				updatable = item
 				updatable.Update()
-				updatable.Time = null
 
 			Updated()
 
@@ -307,11 +267,9 @@ AbstractType(Entity)
 
 			for(item in _late_updatable_components)
 				late_updatable = item
-				late_updatable.Time = EntityUpdateLoop
 
 			for(item in _late_updatable_components)
 				late_updatable = item
 				late_updatable.LateUpdate()
-				late_updatable.Time = null
 
 			LateUpdated()

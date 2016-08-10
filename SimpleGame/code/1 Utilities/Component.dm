@@ -4,10 +4,6 @@ AbstractType(Component)
 		*/
 		Entity/entity
 
-		/* Update loop that caused this component to be updated.
-		*/
-		update_loop/Time
-
 		/* Visible name of this component, including the entity's name.
 		Access restricted; use [SetName(Value)] and [GetName()].
 		Defaults to ["[entity.name]:[GetOwnName()]"].

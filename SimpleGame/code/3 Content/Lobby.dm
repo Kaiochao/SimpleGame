@@ -46,8 +46,8 @@ mob/lobby
 
 		stat("world.cpu", "[world.cpu]%")
 
-		stat("Updating Entities", "[EntityUpdateLoop && length(EntityUpdateLoop.updaters)]")
-		updaters_list_stat.SetText(jointext_short(EntityUpdateLoop.updaters, ", \n"))
+		stat("Updating Entities", "[player.update_loop && length(player.update_loop.updaters)]")
+		updaters_list_stat.SetText(jointext_short(player.update_loop.updaters, ", \n"))
 		stat(updaters_list_stat)
 
 		stat("Physics Updaters", "[PhysicsLoop && length(PhysicsLoop.updaters)]")
