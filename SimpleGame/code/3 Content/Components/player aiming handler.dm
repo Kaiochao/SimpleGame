@@ -16,6 +16,9 @@ Component/AimingHandler/player
 			_zoom
 			_last_axis_input
 
+		list
+			_mouse_screen_position
+
 		_mouse_moved = FALSE
 		_has_axis_input
 
@@ -36,8 +39,8 @@ Component/AimingHandler/player
 
 	GetDirection()
 		if(!_direction)
-			_direction = new (0, 1)
-		return _direction.Copy()
+			_direction = new /vector2 (0, 1)
+		return _direction
 
 	proc
 		Start()
@@ -65,6 +68,7 @@ Component/AimingHandler/player
 
 		HandleMouseMoved(InputHandler/InputHandler, MoveX, MoveY)
 			_mouse_moved = TRUE
+			_mouse_screen_position = InputHandler.GetMouseScreenPosition()
 
 		HandleButtonPressed(InputHandler/InputHandler, Button)
 			if(Button == zoom_button)
@@ -124,11 +128,16 @@ Component/AimingHandler/player
 
 		_UpdateAimInput()
 			_aim_input = _GetAxisAimInput()
+
 			if(_aim_input)
 				_last_axis_input = _aim_input
 				return
 
-			_aim_input = _last_axis_input || _GetMouseAimInput()
+			if(_last_axis_input)
+				_aim_input = _last_axis_input
+				return
+
+			_aim_input = _GetMouseAimInput()
 
 		StartAiming()
 			_UpdateAimInput()
@@ -176,16 +185,16 @@ Component/AimingHandler/player
 				return new /vector2 (_aim_axis_x, _aim_axis_y)
 
 		_GetMouseAimInput()
-			if(!_input_handler) return
+			if(_input_handler && !_input_handler.IsMouseInCamera())
+				_mouse_screen_position = null
+				return
 
-			var mouse_position[] = _input_handler.GetMouseMapPosition()
-			if(!mouse_position) return
+			if(!_mouse_screen_position)
+				return
 
 			var
-				entity_x = entity.GetCenterX()
-				entity_y = entity.GetCenterY()
-				dx = mouse_position[1] - entity_x
-				dy = mouse_position[2] - entity_y
+				dx = _mouse_screen_position[1] + _client.bound_x + 1 - entity.GetCenterX()
+				dy = _mouse_screen_position[2] + _client.bound_y + 1 - entity.GetCenterY()
 
 			if(dx || dy)
 				return new /vector2 (dx, dy)

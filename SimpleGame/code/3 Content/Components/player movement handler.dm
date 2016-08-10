@@ -13,11 +13,18 @@ Component/MovementHandler/player
 		gamepad_speed_button = GamepadButton.L3
 
 	var tmp
-		vector2/velocity
+		vector2/_velocity
 		InputHandler/_input_handler
 
+		_move_axis_x = 0
+		_move_axis_y = 0
+
+		Directions/_move_dir = 0
+		_move_button_x = 0
+		_move_button_y = 0
+
 	GetVelocity()
-		return velocity || ..()
+		return _velocity || ..()
 
 	GetOwnName()
 		return "player movement handler"
@@ -25,10 +32,18 @@ Component/MovementHandler/player
 	Start()
 		..()
 		_input_handler = GetWrappedValue(/Component/Wrapper/InputHandler)
+		if(_input_handler)
+			EVENT_ADD(_input_handler.AxisChanged, src, .proc/HandleAxisChanged)
+			EVENT_ADD(_input_handler.ButtonPressed, src, .proc/HandleButtonPressed)
+			EVENT_ADD(_input_handler.ButtonReleased, src, .proc/HandleButtonReleased)
 
 	Destroy()
 		..()
-		_input_handler = null
+		if(_input_handler)
+			EVENT_REMOVE_OBJECT(_input_handler.AxisChanged, src)
+			EVENT_REMOVE_OBJECT(_input_handler.ButtonPressed, src)
+			EVENT_REMOVE_OBJECT(_input_handler.ButtonReleased, src)
+			_input_handler = null
 
 	Update()
 		var
@@ -39,35 +54,56 @@ Component/MovementHandler/player
 		speed = IsRunning() ? run_speed : walk_speed
 
 		if(!speed)
-			velocity = null
+			_velocity = null
 
 		else
-			var vector2/move_axis_input = vector2.FromList(
-				_input_handler.GetAxisValues(move_axis))
-
-			if(move_axis_input.IsZero())
-				input_x = _input_handler.IsButtonPressed(move_right) \
-						- _input_handler.IsButtonPressed(move_left)
-				input_y = _input_handler.IsButtonPressed(move_up) \
-						- _input_handler.IsButtonPressed(move_down)
-				if(input_x && input_y)
-					var magnitude = Math.Hypot(input_x, input_y)
-					input_x /= magnitude
-					input_y /= magnitude
+			if(_move_axis_x || _move_axis_y)
+				input_x = _move_axis_x
+				input_y = _move_axis_y
 			else
-				input_x = move_axis_input.GetX()
-				input_y = move_axis_input.GetY()
-
+				input_x = _move_button_x
+				input_y = _move_button_y
 			if(input_x || input_y)
-				velocity = new (input_x * speed, input_y * speed)
+				_velocity = new /vector2 (input_x * speed, input_y * speed)
 			else
-				velocity = null
+				_velocity = null
 
 		..()
 
 	proc
+		HandleAxisChanged(InputHandler/InputHandler, Axis, X, Y)
+			_move_axis_x = X
+			_move_axis_y = Y
+
+		HandleButtonPressed(InputHandler/InputHandler, Button)
+			var button_dir = _ButtonToDirection(Button)
+			if(button_dir)
+				_SetMoveDir(_move_dir | button_dir)
+
+		HandleButtonReleased(InputHandler/InputHandler, Button)
+			var button_dir = _ButtonToDirection(Button)
+			if(button_dir)
+				_SetMoveDir(_move_dir & ~button_dir)
+
 		IsRunning()
 			return !(
 				   _input_handler.IsButtonPressed(speed_button) \
 				|| _input_handler.IsButtonPressed(gamepad_speed_button)
 				)
+
+		_ButtonToDirection(Button)
+			if(Button == move_right)
+				return Directions.East
+			else if(Button == move_left)
+				return Directions.West
+			else if(Button == move_up)
+				return Directions.North
+			else if(Button == move_down)
+				return Directions.South
+			return Directions.Center
+
+		_SetMoveDir(Value)
+			if(_move_dir != Value)
+				_move_dir = Value
+				_move_button_x = Directions.ToOffsetX(_move_dir)
+				_move_button_y = Directions.ToOffsetY(_move_dir)
