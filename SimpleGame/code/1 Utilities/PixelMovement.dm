@@ -51,8 +51,6 @@ atom/movable
 			_sub_step = null
 
 	proc/GetSubStep()
-		if(!_sub_step)
-			_sub_step = VECTOR2_ZERO
 		return _sub_step
 
 	GetLowerX()  return 1 + bound_x + step_x + (x - 1) * TILE_WIDTH

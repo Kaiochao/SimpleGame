@@ -11,7 +11,6 @@ AbstractType(Component/MovementHandler)
 			_physics = null
 
 		GetVelocity()
-			return VECTOR2_ZERO
 
 		Update()
 			_physics.SetVelocity(GetVelocity())

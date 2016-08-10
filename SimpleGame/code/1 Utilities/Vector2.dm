@@ -1,5 +1,3 @@
-#define VECTOR2_ZERO (new /vector2 (0, 0))
-
 var Vector2Static/vector2 = new
 
 Vector2Static
@@ -23,7 +21,7 @@ Vector2Static
 				var s = Magnitude / Math.Hypot(x, y)
 				return new /vector2 (x * s, y * s)
 			else
-				return VECTOR2_ZERO
+				return new /vector2 (0, 0)
 
 // Immutable
 vector2
@@ -71,7 +69,7 @@ vector2
 			return new /vector2 (_x - V._x, _y - V._y)
 
 		Multiply(M)
-			return M ? new /vector2 (_x * M, _y * M) : VECTOR2_ZERO
+			return M ? new /vector2 (_x * M, _y * M) : new /vector2 (0, 0)
 
 		Divide(D)
 			return new /vector2 (_x / D, _y / D)
@@ -100,7 +98,7 @@ vector2
 			return dampened
 
 		GetNormalized()
-			return (_x || _y) ? Scale(1 / GetMagnitude()) : VECTOR2_ZERO
+			return (_x || _y) ? Scale(1 / GetMagnitude()) : new /vector2 (0, 0)
 
 		GetMagnitude()
 			return sqrt(_x * _x + _y * _y)
