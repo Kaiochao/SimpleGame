@@ -4,7 +4,6 @@ AbstractType(Component/Weapon)
 
 	var tmp
 		Component/AimingHandler/_aiming_handler
-
 		vector2/_last_aim
 
 	New(obj/Body)

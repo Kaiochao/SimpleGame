@@ -46,10 +46,10 @@ Entity/player
 				input_handler_wrapper,
 				physics,
 				weapon_handler,
-				camera
+				camera,
 			) + newlist(
 				/Component/MovementHandler/player,
-				/Component/AimingHandler/player
+				/Component/AimingHandler/player,
 			)
 		)
 
